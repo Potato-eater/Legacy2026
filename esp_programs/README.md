@@ -1,0 +1,2 @@
+- all the programs that we have for the esp32 s2.
+- otherwise known as the programs for the ir sensor and line sensor.

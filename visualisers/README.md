@@ -1,0 +1,2 @@
+- visualisers are small programs to help us understand what the robot is doing.
+- so that we can have graphical approaches to debugging instead of dealing with raw numbers.
