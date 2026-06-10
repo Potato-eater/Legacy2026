@@ -6,17 +6,35 @@ extern "C" {
     #include <esp_task_wdt.h>
     #include "math.h"
     #include <driver/uart.h>
+    #include "esp_wifi.h"
+    #include "esp_event.h"
+    #include "esp_mac.h"
+
+    #include "sys/socket.h"
+    #include "netinet/in.h"
+    #include "arpa/inet.h"
+    #include "lwip/err.h"
+    #include "lwip/sys.h"
+    #include "esp_log.h"
+    #include "nvs_flash.h"
 }
 #include "led.hpp"
 #include "sensor.hpp"
 #include "calc.hpp"
 #include <array>
 #include <string>
+
+static const char *TAG = "IR SENSOR";
+
+
+
 #define TX 43
 #define RX 44
 #define UART_PORT_NUM UART_NUM_1
 #define BAUD_RATE 921600
 #define UART_BUF_SIZE (2048)
+
+
 void init_uart() {
     uart_config_t uart_config = {
         .baud_rate = BAUD_RATE,
@@ -36,11 +54,50 @@ void send_float_array_as_bytes(float* arr, size_t len) {
     uart_write_bytes(UART_PORT_NUM, (const char*)arr, total_bytes);
 }
 extern "C" void app_main(void) {
-    esp_task_wdt_deinit();
+    // esp_task_wdt_deinit();
+
+    nvs_flash_init();
+    esp_netif_init();
+    esp_event_loop_create_default();
+    esp_netif_create_default_wifi_ap();
+
+    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+    esp_wifi_init(&cfg);
+
+    wifi_config_t ap_config = {};
+    strcpy((char*)ap_config.ap.ssid, "LEGACY_IR");
+    strcpy((char*)ap_config.ap.password, "legacy_robot");
+    ap_config.ap.ssid_len = strlen("LEGACY_IR");
+    ap_config.ap.authmode = WIFI_AUTH_WPA2_PSK;
+    ap_config.ap.max_connection = 1;
+    ap_config.ap.channel = 1;
+
+    esp_wifi_set_mode(WIFI_MODE_AP);
+    esp_wifi_set_config(WIFI_IF_AP, &ap_config);
+    esp_wifi_start();
+
     init_uart();
     Led debug_led = Led((gpio_num_t)45);
     debug_led.set_level(1);
     SensorRing irseeker = SensorRing();
+
+
+
+
+    struct sockaddr_in dest_addr;
+    
+    dest_addr.sin_addr.s_addr = inet_addr("192.168.4.2");
+    dest_addr.sin_family = AF_INET;
+    dest_addr.sin_port = htons(1234);
+    int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
+    if (sock < 0) {
+        ESP_LOGE(TAG, "Unable to create socket");
+        vTaskDelete(NULL);
+        return;
+    }
+
+
+
     // std::array<std::array<float, 4>, 5> reading_history = {0};
     // reading_history.fill({0, 0, 0, 0});
     while (1) {
@@ -75,9 +132,17 @@ extern "C" void app_main(void) {
         }
         uart_write_bytes(UART_PORT_NUM, "e", 1);
         send_float_array_as_bytes(send_array, 4);
-        send_float_array_as_bytes(sensor_values, 16);
+        // send_float_array_as_bytes(sensor_values, 16);
         uart_wait_tx_done(UART_PORT_NUM, pdMS_TO_TICKS(100));
-        send_array[0] = send_array[0] * 180 / M_PI;
+        // send_array[0] = send_array[0] * 180 / M_PI;
+
+
+        sendto(sock,
+                    sensor_values,
+                    sizeof(sensor_values),
+                    0,
+                    (struct sockaddr *)&dest_addr,
+                    sizeof(dest_addr));
         // =========================================================
 
 

@@ -13,21 +13,21 @@ SensorRing::SensorRing() {
     }
     this->sensor_vectors = {
         PolarVector{.a = 0.0f, .m = 0}, // 1
-        PolarVector{.a = -M_PI/8, .m = 0}, // 2
-        PolarVector{.a = -M_PI_4, .m = 0}, // 3
-        PolarVector{.a = -3 * M_PI / 8, .m = 0}, // 4
-        PolarVector{.a = -M_PI_2, .m = 0}, // 5
-        PolarVector{.a = -5 * M_PI / 8, .m = 0}, // 6
-        PolarVector{.a = -M_3PI_4, .m = 0}, // 7
-        PolarVector{.a = -7 * M_PI / 8, .m = 0}, // 8
-        PolarVector{.a = M_PI, .m = 0}, // 9
-        PolarVector{.a = 7 * M_PI / 8, .m = 0}, // 10
-        PolarVector{.a = M_3PI_4, .m = 0}, // 11
-        PolarVector{.a = 5 * M_PI / 8, .m = 0}, // 12 
-        PolarVector{.a = M_PI_2, .m = 0}, // 13
-        PolarVector{.a = 3 * M_PI, .m = 0}, // 14
-        PolarVector{.a = M_PI_4, .m = 0}, // 15
-        PolarVector{.a = M_PI / 9, .m = 0}, // 16
+        PolarVector{.a = -1 * M_PI/8, .m = 0}, // 2
+        PolarVector{.a = -2 * M_PI/8, .m = 0}, // 3
+        PolarVector{.a = -3 * M_PI/8, .m = 0}, // 4
+        PolarVector{.a = -4 * M_PI/8, .m = 0}, // 5
+        PolarVector{.a = -5 * M_PI/8, .m = 0}, // 6
+        PolarVector{.a = -6 * M_PI/8, .m = 0}, // 7
+        PolarVector{.a = -7 * M_PI/8, .m = 0}, // 8
+        PolarVector{.a = 8 * M_PI/8, .m = 0}, // 9
+        PolarVector{.a = 7 * M_PI/8, .m = 0}, // 10
+        PolarVector{.a = 6 * M_PI/8, .m = 0}, // 11
+        PolarVector{.a = 5 * M_PI/8, .m = 0}, // 12 
+        PolarVector{.a = 4 * M_PI/8, .m = 0}, // 13
+        PolarVector{.a = 3 * M_PI/8, .m = 0}, // 14
+        PolarVector{.a = 2 * M_PI/8, .m = 0}, // 15
+        PolarVector{.a = 1 * M_PI/8, .m = 0}, // 16
     };
 }
 
@@ -94,6 +94,6 @@ std::array<float, 4> SensorRing::advancedRead() {
     }
     sum_vector.i /= 16;
     sum_vector.j /= 16;
-    PolarVector ball_vector = {.a = fmodf(atan2(sum_vector.j, sum_vector.i), 2 * M_PI), .m = sqrtf(pow(sum_vector.i, 2) + pow(sum_vector.j, 2))};
+    PolarVector ball_vector = {.a = atan2(sum_vector.j, sum_vector.i), .m = sqrtf(pow(sum_vector.i, 2) + pow(sum_vector.j, 2))};
     return {ball_vector.a, ball_vector.m, sum_vector.i, sum_vector.j};
 }

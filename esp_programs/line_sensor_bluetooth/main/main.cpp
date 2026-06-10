@@ -23,6 +23,7 @@ extern "C" {
 #include "calc.hpp"
 // static const char *TAG = "wifi_ap";
 
+#define THRESHOLD 900
 
 struct Vector {
     float i;
@@ -206,7 +207,7 @@ extern "C" void app_main(void) {
         };
         bool led_on = false;
         for (uint8_t i = 0; i < CHANNEL_NUM; i++) {
-            if (tcrt_values[i] <= 800) {
+            if (tcrt_values[i] <= THRESHOLD) {
                 led_on = true;
                 break;
             }
@@ -228,7 +229,7 @@ extern "C" void app_main(void) {
 
         
 
-        std::array<bool, CHANNEL_NUM> whites = find_white(tcrt_values, 800);
+        std::array<bool, CHANNEL_NUM> whites = find_white(tcrt_values, THRESHOLD);
         // std::array<bool, CHANNEL_NUM> whites = {true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false};
         std::array<float, 2> result = find_line(whites, sensor_vectors);
 
