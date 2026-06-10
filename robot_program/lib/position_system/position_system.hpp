@@ -1,0 +1,49 @@
+#ifndef _POSITION_SYSTEM_HPP_
+#define _POSITION_SYSTEM_HPP_
+
+#pragma once
+
+#include <iostream>
+#include <Adafruit_BNO055.h>
+
+#include "vector.hpp"
+#include "otos.hpp"
+#include "constants.h"
+
+// Wrapper class for OTOS and BNO055 (initially for Ultrasonics as well but we don't use those)
+class PositionSystem {
+    private:
+    Adafruit_BNO055 bno;
+    OTOS otos;
+
+    bool use_otos;
+    bool bno_ok;
+
+    Vector opp_goal_posv;
+    Vector own_goal_posv;
+    Vector posv;
+    float heading;
+
+    public:
+    PositionSystem();
+
+    Vector get_relative_to(Vector other_posv);
+
+    Vector get_posv();
+    float get_heading();
+
+    Vector get_opp_goal_vec();
+    Vector get_own_goal_vec();
+
+    void set_pos(Vector posv, float heading);
+
+    bool check_bno_ok();
+    bool check_otos_ok();
+    void setup();
+    void update();
+
+    static bool within_opp_goal_range(Vector pos_vector);
+    static bool within_own_goal_range(Vector pos_vector);
+};
+
+#endif
