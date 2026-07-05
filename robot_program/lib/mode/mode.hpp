@@ -45,6 +45,28 @@ class IndependentAttack : public Mode {
 
 };
 
+// defender mode
+class BetterDefend : public Mode {
+    private:
+    Vector target_posv;
+    Vector target_vec;
+    int status;
+    float find_move_angle(Vector goal_vector, float ball_angle, float ball_strength);
+
+    public:
+    const int RETURNING = 0;
+    const int DEFENDING = 1;
+    BetterDefend();
+    void reset();
+    OutputData update(BotData &self_data, BotData &other_data, float loop_time);
+
+    // outsiders can view status but can't modify it
+    const int& get_status_code() const {
+        return this->status;
+    };
+    // use by calling the function
+};
+
 
 
 #endif

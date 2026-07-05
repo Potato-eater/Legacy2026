@@ -14,8 +14,9 @@
 class PositionSystem {
     private:
     Adafruit_BNO055 bno;
+    public:
     OTOS otos;
-
+    private:
     bool use_otos;
     bool bno_ok;
 
