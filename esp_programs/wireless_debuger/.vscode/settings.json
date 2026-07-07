@@ -1,0 +1,14 @@
+{
+  "C_Cpp.intelliSenseEngine": "default",
+  "idf.extensionActivationMode": "always",
+  "idf.openOcdConfigs": [
+    "interface/ftdi/esp32_devkitj_v1.cfg",
+    "target/esp32s2.cfg"
+  ],
+  "idf.portWin": "COM5",
+  "idf.currentSetup": "C:\\Users\\yuets\\esp\\v5.4\\esp-idf",
+  "idf.customExtraVars": {
+    "IDF_TARGET": "esp32s2"
+  },
+  "idf.flashType": "UART"
+}

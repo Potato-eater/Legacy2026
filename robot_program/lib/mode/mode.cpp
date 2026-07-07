@@ -76,28 +76,42 @@ float IndependentAttack::calculate_move_angle_camera(float heading, float ball_a
 }
 
 float IndependentAttack::calculate_move_angle_otos(float heading, float ball_angle, float ball_magnitude, Vector goal_vec) {
+    while (ball_angle >= PI) ball_angle -= 2 * PI;
+    while (ball_angle <= -PI) ball_angle += 2 * PI;
     float angle_diff = PI / 2 - goal_vec.heading();
     if (ball_magnitude < BALL_STRENGTH_LIMIT) {
+        // Serial.println("ball far");
         return ball_angle;
     }
-    if (ball_angle > goal_vec.heading() - FORWARD_TOLERANCE && ball_angle < goal_vec.heading() + FORWARD_TOLERANCE) {
-        Vector aim_vec = goal_vec;
-        return aim_vec.heading(); // move forward
+    
+    float low_bound = goal_vec.heading() - FORWARD_TOLERANCE;
+    float high_bound = goal_vec.heading() + FORWARD_TOLERANCE;
+    Serial.printf("low %.2f, high %.2f", low_bound * 180/M_PI, high_bound * 180/M_PI);
+    if (ball_angle > low_bound && ball_angle < high_bound) {
+        // Vector aim_vec = goal_vec;
+        Serial.println("forward");
+        // return aim_vec.heading(); // move forward
+        return ball_angle;
     }
-    else if ((ball_angle > goal_vec.heading() + FORWARD_TOLERANCE) || (ball_angle < -M_PI_2 + angle_diff)) {
-        // Serial.println("Turning right");
+    else if ((ball_angle > high_bound) || (ball_angle < -M_PI_2 + angle_diff)) {
+        Serial.println("Turning right");
+
         return ball_angle + PI / 18 * 8; // turn right
     }
-    else if ((ball_angle < goal_vec.heading() - FORWARD_TOLERANCE)) {
-        // Serial.println("Turning left");
+    else if ((ball_angle < low_bound)) {
+        Serial.println("Turning left");
         return ball_angle - PI / 18 * 8; // turn left
     }
+
+
     return 0.0;
 }
 float IndependentAttack::calculate_move_angle_camera_otos(Vector goal_vec, float heading, float ball_angle, float ball_magnitude) {
     // throw "dont use this function.";
     return 0.0;
 }
+
+
 
 OutputData IndependentAttack::update(BotData &self_data, BotData &other_data, float loop_time) {
     float mv_angle = M_PI_2;
@@ -117,7 +131,17 @@ OutputData IndependentAttack::update(BotData &self_data, BotData &other_data, fl
         case OTOS_MODE: {
             Vector opp_goal_vector = opp_goal_pos_vector.relative_to(self_data.pos_vector);
             rotation = opp_goal_vector.heading() - heading - M_PI_2;
-            // Serial.printf("rotation: %.2f\n", rotation);
+
+            // Serial.println("on my way to calculate mv angle otos");
+            mv_angle = this->calculate_move_angle_otos(heading, self_data.ball_angle, self_data.ball_strength, opp_goal_vector);
+            break;
+        }
+        case OTOS_REFLECTION_MODE: { // this is the same thing as OTOS_MODE except it aims into the reflection of the goal.
+            Vector aim_vec = opp_goal_pos_vector;
+            aim_vec.i -= 150;
+
+            Vector opp_goal_vector = aim_vec.relative_to(self_data.pos_vector);
+            rotation = aim_vec.heading() - heading - M_PI_2;
             mv_angle = this->calculate_move_angle_otos(heading, self_data.ball_angle, self_data.ball_strength, opp_goal_vector);
             break;
         }

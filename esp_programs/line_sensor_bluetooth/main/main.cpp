@@ -25,6 +25,10 @@ extern "C" {
 
 #define THRESHOLD 900
 
+
+
+
+
 struct Vector {
     float i;
     float j;
@@ -94,16 +98,17 @@ bool read_teensy(BotData* teensy_data) {
     memcpy(teensy_data, data_ptr, payload_bytes);
     return true;
 }
-void find_other_mac_address(uint8_t* other_mac) {
-    // david's line sensor mac address: D8:3B:DA:C6:D1:D4
-    // bobbler's line sensor mac address: D8:3B:DA:C6:D1:CE
+void find_other_mac_address(uint8_t* this_mac, uint8_t* other_mac) {
+    // \xD8\x3B\xDA\xC6\xD1\xC8: isabelle
+    // \xD8\x3B\xDA\xC6\xD1\xC0: ryan
+    // \xD8\x3B\xDA\xC6\xD1\xCA: debugger
 
-    uint8_t own_mac[6];
-    esp_read_mac(own_mac, ESP_MAC_WIFI_STA);
-    if (own_mac[5] == 0xD4) {
-        memcpy(other_mac, "\xD8\x3B\xDA\xC6\xD1\xCE", 6); // bobbler's mac
+
+    esp_read_mac(this_mac, ESP_MAC_WIFI_STA);
+    if (this_mac[5] == 0xC8) {
+        memcpy(other_mac, "\xD8\x3B\xDA\xC6\xD1\xC0", 6); // ryan's mac
     } else {
-        memcpy(other_mac, "\xD8\x3B\xDA\xC6\xD1\xD4", 6); // david's mac
+        memcpy(other_mac, "\xD8\x3B\xDA\xC6\xD1\xC8", 6); // isabelle's mac
     }
 }
 void on_data_sent(const uint8_t *mac_addr, esp_now_send_status_t status) {
@@ -121,7 +126,7 @@ void on_data_recv(const esp_now_recv_info_t *recv_info, const uint8_t *data, int
     }
 }
 
-void init_esp_now(uint8_t* send_mac) {
+void init_esp_now(uint8_t* send_mac, uint8_t* debugger_mac) {
     ESP_ERROR_CHECK(nvs_flash_init());
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
@@ -143,16 +148,16 @@ void init_esp_now(uint8_t* send_mac) {
     memcpy(peerInfo.peer_addr, send_mac, 6);
     peerInfo.channel = 1;  // same channel as set above
     peerInfo.encrypt = false;
-    esp_err_t ret = esp_now_add_peer(&peerInfo);
-    if (ret == ESP_ERR_ESPNOW_EXIST) {
-        printf("sending peer already added");
-    } else if (ret != ESP_OK) {
-        printf("Failed to add broadcast peer: %d", ret);
-        return;
-    }
+    esp_now_add_peer(&peerInfo);
+    memcpy(peerInfo.peer_addr, debugger_mac, 6);
+    esp_now_add_peer(&peerInfo);
 }
 
 extern "C" void app_main(void) {
+    uint8_t debugger_mac[6];
+    memcpy(debugger_mac, "\xD8\x3B\xDA\xC6\xD1\xCA", 6);
+
+
 
     Led debug_led((gpio_num_t)45);
     init_uart();
@@ -180,10 +185,10 @@ extern "C" void app_main(void) {
         .velocity = {0.0, 0.0}
     };
 
-
+    uint8_t this_mac[6];
     uint8_t other_mac[6];
-    find_other_mac_address(other_mac);
-    init_esp_now(other_mac);
+    find_other_mac_address(this_mac, other_mac);
+    init_esp_now(other_mac, debugger_mac);
     while (true) {
         ring.readRaw(result, adc_values, output_data);
         
@@ -273,12 +278,16 @@ extern "C" void app_main(void) {
         send_float_array_as_bytes(send_value, 2);
         uart_write_bytes(UART_PORT_NUM, (const uint8_t*)&received_data, sizeof(received_data));
 
-        esp_err_t send_ret = esp_now_send(other_mac, (uint8_t*)&teensy_data, sizeof(teensy_data));
+        esp_err_t send_ret = esp_now_send(NULL, (uint8_t*)&teensy_data, sizeof(teensy_data));
         
         // printf("%d", read_teensy(&teensy_data));
         end_time = esp_timer_get_time();
         // printf(" received xy %.2f %.2f not_received %ld ", received_data.pos_vector.i, received_data.pos_vector.j, not_received); // use this to see if it is receiving data
-        printf("time: %lld ms", (end_time - start_time) / 1000);
+        printf("time: %lld ms ", (end_time - start_time) / 1000);
+        for (int i = 0; i < 6; i++) {
+            printf("\\%X", this_mac[i]);
+        }
+        printf(" ");
         for (int i = 0; i < CHANNEL_NUM; i++) {
             printf("%1d: %ld ", i + 1, tcrt_values[i]);
         }

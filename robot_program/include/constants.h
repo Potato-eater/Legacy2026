@@ -21,7 +21,7 @@ const float FORWARD_TOLERANCE = M_PI/11;
 const float DEFEND_DIST = 30; // not used by better defend
 const int SLOW_DOWN_DIST = 15;
 
-const int BALL_STRENGTH_LIMIT = 30; // the number lower than this means the ball is far away
+const int BALL_STRENGTH_LIMIT = 25; // the number lower than this means the ball is far away
 
 // Limits
 const float MAX_SPEED = 100;

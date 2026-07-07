@@ -157,6 +157,7 @@ void setup() {
 
 
 void loop() {
+  // Serial.println("hello world");
   set_robot_pos();
   // button_pressed = !digitalReadFast(BTN_1) | !digitalReadFast(BTN_2) | !digitalReadFast(BTN_3) | !digitalReadFast(BTN_4) | !digitalReadFast(BTN_5);
   robot_start = !digitalReadFast(BTN_RUN);
@@ -174,6 +175,8 @@ void loop() {
   pos_sys.update();
   camera.update();
   float heading = pos_sys.get_heading() - heading_offset;
+  while (heading >= PI) heading -= 2 * PI;
+  while (heading <= -PI) heading += 2 * PI;
 
 
   ir_sensor.angle_correction(heading);
@@ -196,7 +199,9 @@ void loop() {
     .velocity = Vector(0.0, 0.0),
     .goal_x = camera.goal_x,
   };
-  BotData other_data = { 0 };
+
+  line_sensor.send_bot_data(self_data);
+  BotData other_data = line_sensor.other_data;
 
   // OutputData output = independent_attack.update(self_data, other_data, 0.0);
   OutputData output = better_defend.update(self_data, other_data, 0.0);
@@ -231,6 +236,7 @@ void loop() {
 
 
   prev_robot_state = robot_start;
+  
   digitalWrite(DEBUG_LED, HIGH);
 }
 
