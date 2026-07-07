@@ -30,6 +30,7 @@ enum AimMode {
     OTOS_MODE,
     CAMERA_MODE,
     CAMERA_OTOS_MODE,
+    OTOS_REFLECTION_MODE,
 };
 
 class IndependentAttack : public Mode {

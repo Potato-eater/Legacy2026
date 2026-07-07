@@ -21,7 +21,7 @@ float Vector::magnitude() const {
 }
 
 float Vector::heading() const {
-    return fmodf(atan2(this->j, this->i), 2 * M_PI);
+    return atan2(this->j, this->i);
 }
 
 Vector Vector::unit() const {

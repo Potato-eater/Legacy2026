@@ -45,7 +45,7 @@ DribblerMotor dribbler(DR_DIR, DR_PWM);
 Adafruit_SSD1306 display(128, 32, &Wire, -1);
 
 // Modes
-IndependentAttack independent_attack(AimMode::CAMERA_MODE);
+IndependentAttack independent_attack(AimMode::OTOS_MODE);
 // OneRobot one_robot_mode;
 // BetterDefend better_defend_mode;
 // uint8_t previous_mode = 0;
@@ -120,6 +120,7 @@ void setup() {
 
 
 void loop() {
+  // Serial.println("hello world");
   set_robot_pos();
   // button_pressed = !digitalReadFast(BTN_1) | !digitalReadFast(BTN_2) | !digitalReadFast(BTN_3) | !digitalReadFast(BTN_4) | !digitalReadFast(BTN_5);
   robot_start = !digitalReadFast(BTN_RUN);
@@ -137,6 +138,8 @@ void loop() {
   pos_sys.update();
   camera.update();
   float heading = pos_sys.get_heading() - heading_offset;
+  while (heading >= PI) heading -= 2 * PI;
+  while (heading <= -PI) heading += 2 * PI;
 
 
   ir_sensor.angle_correction(heading);
@@ -159,10 +162,15 @@ void loop() {
     .velocity = Vector(0.0, 0.0),
     .goal_x = camera.goal_x,
   };
-  BotData other_data = { 0 };
+
+  line_sensor.send_bot_data(self_data);
+  BotData other_data = line_sensor.other_data;
 
   OutputData output = independent_attack.update(self_data, other_data, 0.0);
 
+
+  // Vector goal_vec = opp_goal_pos_vector.relative_to(self_data.pos_vector);
+  // Serial.printf("heading: %.2f\n", heading * 180.0 / M_PI);
   if (self_data.line_vector.magnitude() != 0) {
     output.angle = self_data.line_vector.heading() + M_PI;
   }
@@ -188,6 +196,7 @@ void loop() {
 
 
   prev_robot_state = robot_start;
+  
   digitalWrite(DEBUG_LED, HIGH);
 }
 
