@@ -67,11 +67,11 @@ float IndependentAttack::calculate_move_angle_camera(float heading, float ball_a
     }
     else if ((ball_angle > lim_up) || (ball_angle < -M_PI_2)) {
         // Serial.println("Turning right");
-        return ball_angle + M_PI / 18 * 6; // turn right
+        return ball_angle + M_PI / 18.0 * 7.5; // turn right
     }
     else if ((ball_angle < lim_down)) {
         // Serial.println("Turning left");
-        return ball_angle - M_PI / 18 * 6; // turn left
+        return ball_angle - M_PI / 18.0 * 7.5; // turn left
     }
 }
 
@@ -106,8 +106,10 @@ float IndependentAttack::calculate_move_angle_otos(float heading, float ball_ang
 
     return 0.0;
 }
-
-float IndependentAttack::calculate_move_angle_camera_otos(Vector goal_vec, float heading, float ball_angle, float ball_magnitude) {return 0.0;};
+float IndependentAttack::calculate_move_angle_camera_otos(Vector goal_vec, float heading, float ball_angle, float ball_magnitude) {
+    // throw "dont use this function.";
+    return 0.0;
+}
 
 
 
@@ -155,12 +157,20 @@ OutputData IndependentAttack::update(BotData &self_data, BotData &other_data, fl
             break;
         }
 
-        case CAMERA_OTOS_MODE: {
-            rotation = 0;
-            mv_angle = 0;
-            speed = 0;
+        case CAMERA_OTOS_MODE: { // not tested yet.
+            int pixel_diff = self_data.goal_x - 80;
+            rotation = pixel_diff * -(M_PI / 160.0);
+            if (self_data.goal_x == -1) {
+                pixel_diff = 0;
+                Vector opp_goal_vector = opp_goal_pos_vector.relative_to(self_data.pos_vector);
+                rotation = opp_goal_vector.heading() - heading - M_PI_2;
+                mv_angle = this->calculate_move_angle_otos(heading, self_data.ball_angle, self_data.ball_strength, opp_goal_vector);
+                break;
+            }
+            mv_angle = this->calculate_move_angle_camera(heading, self_data.ball_angle, self_data.ball_strength);
             break;
         }
+        
     };
     while (rotation > M_PI) rotation -= 2*M_PI;
     while (rotation < -M_PI) rotation += 2*M_PI;
@@ -170,4 +180,76 @@ OutputData IndependentAttack::update(BotData &self_data, BotData &other_data, fl
     return OutputData {.angle = mv_angle, .speed = speed, .rotation = rotation, .dribbler_on = dribbler_on};
 }
 
+BetterDefend::BetterDefend() {
+    this->status = 0;
+    this->target_posv = Vector(0, 0);
+    this->target_vec = Vector(0, 0);
+}
 
+void BetterDefend::reset() {
+    this->status = this->RETURNING;
+}
+
+OutputData BetterDefend::update(BotData &self_data, BotData &other_data, float loop_time) {
+    // if in goal square and sees the ball, start defending
+    if (self_data.pos_vector.i > -GOAL_WIDTH/2 && self_data.pos_vector.i < GOAL_WIDTH/2 && self_data.pos_vector.j <= -65 && self_data.ball_strength != 0) {
+        this->status = this->DEFENDING;
+    }
+    else {
+        this->status = this->RETURNING;
+    }
+
+    Vector goal_vec = Vector(0, DEFEND_CENTRE_Y).relative_to(self_data.pos_vector);
+
+    // if defending go on the semi-circle
+    if (this->status == this->DEFENDING) {
+        // limit rotation
+        if (self_data.ball_angle > 3*PI/2) {
+            this->rotation = this->get_rotation(0, self_data.heading);
+        }
+        else if (self_data.ball_angle > PI) {
+            this->rotation = this->get_rotation(PI, self_data.heading);
+        }
+        else {
+            this->rotation = this->get_rotation(self_data.ball_angle, self_data.heading);
+        }
+        Vector ball_vector = Vector::from_heading(self_data.ball_angle, DEFEND_OFFSET+DEFEND_Y);
+        this->target_vec = Vector(goal_vec.i+ball_vector.i, goal_vec.j+ball_vector.j);
+        
+        this->angle = target_vec.heading();
+    }
+    // if returning go back to goal while avoiding the ball
+    else if (this->status == this->RETURNING) {
+        this->rotation = this->get_rotation(PI/2, self_data.heading);
+        this->target_vec = Vector(goal_vec.i, goal_vec.j+15);
+        this->angle = target_vec.heading();
+
+        // difference in angle between ball angle and goal target vector
+        float angle_diff = self_data.ball_angle - target_vec.heading();
+        while (angle_diff > PI) angle_diff -= 2*PI;
+        while (angle_diff < -PI) angle_diff += 2*PI;
+
+        // if ball close and ball in the way off goal
+        if (self_data.ball_strength >= 30 && angle_diff <= PI/2) {
+            if (angle_diff != 0) this->angle += (abs(angle_diff)/angle_diff)*-PI/18*6;
+            else this->angle += PI/18*6;
+        }
+        // if angle diff positive then ball is on the right therefore -60 degrees
+        // if angle diff negative then ball is on the left therefore +60 degrees
+    }
+
+    // PID movement vector
+    // Vector movement = linear_pid.get_movement(self_data.pos_vector, this->target_posv, MAX_SPEED, loop_time);
+    // this->angle = movement.heading();
+    // this->speed = movement.magnitude();
+
+    this->dribbler_on = false;
+    this->speed = 100;
+    if (self_data.line_vector.magnitude() != 0) {
+        // if in goal square dont bounce back from line
+        if (self_data.pos_vector.i <= 22.5 && self_data.pos_vector.i >= -22.5) this->angle = Vector(this->target_vec.i, 0).heading();
+        else this->angle = self_data.line_vector.heading() + PI;
+    }
+
+    return OutputData { .angle=this->angle, .speed=this->speed, .rotation=this->rotation, .dribbler_on=this->dribbler_on };
+}

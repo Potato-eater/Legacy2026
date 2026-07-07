@@ -1,3 +1,6 @@
+// main code for the robots for team Legacy, 2026. We are team from Rossmoyne Senior High School.
+
+// include all the libraries.
 #include <Arduino.h>
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
@@ -6,7 +9,6 @@
 #include <iostream>
 #include <SoftwareSerial.h>
 
-// #include "SoftPWM.h"
 #include "position_system.hpp"
 #include "pins.h"
 #include "vector.hpp"
@@ -23,11 +25,40 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
+// pre-defining some functions.
 bool set_robot_pos();
 void print_botdata(BotData &bot_data, String message);
 
+// checks if the robot is on the line
+void check_line(float heading, Vector line_vector, PositionSystem *pos_sys, float *move_angle) {
+  if (line_vector.magnitude() != 0) {
+    *move_angle = line_vector.heading() + M_PI;
+    // Vector current_pos = pos_sys->get_posv();
+
+    // float tolerance = M_PI / 8.0;
+    // if (line_vector.heading() < tolerance && line_vector.heading() > -tolerance) {
+    //   Vector new_pos = Vector(50.0, current_pos.j);
+    //   pos_sys->set_pos(new_pos, heading * 180.0 / M_PI);
+    // }
+    // if (line_vector.heading() < M_3PI_4 && line_vector.heading() > M_PI_4) {
+    //   Vector new_pos = Vector(current_pos.i, 91.5);
+    //   pos_sys->set_pos(new_pos, -heading * 180.0 / M_PI);
+    // }
+    // if (line_vector.heading() < -M_PI + tolerance || line_vector.heading() > M_PI - tolerance) {
+    //   Vector new_pos = Vector(-50.0, current_pos.j);
+    //   pos_sys->set_pos(new_pos, heading * 180.0 / M_PI);
+    // }
+    // if (line_vector.heading() < -M_PI_4 && line_vector.heading() > -M_3PI_4) {
+    //   Vector new_pos = Vector(current_pos.i, -91.5);
+    //   pos_sys->set_pos(new_pos, -heading * 180.0 / M_PI);
+    // }
+  }
+}
 
 
+// init all the objects and variables.
+// the arduino framework uses a setup and loop function,
+// so we have to define everything as global if we need to use them across iterations.
 IRSensor ir_sensor;
 LineSensor line_sensor;
 Camera camera;
@@ -35,9 +66,9 @@ PositionSystem pos_sys;
 
 MotorController motor_ctrl;
 
-bool robot_start = false;
+bool robot_start = false; // thie variable defines if the robot should move.
 
-bool button_pressed = false;
+bool button_pressed = false; 
 bool prev_robot_state = false;
 
 float heading_offset = 0;
@@ -45,7 +76,10 @@ DribblerMotor dribbler(DR_DIR, DR_PWM);
 Adafruit_SSD1306 display(128, 32, &Wire, -1);
 
 // Modes
-IndependentAttack independent_attack(AimMode::OTOS_MODE);
+// using polymorphism, we can have different modes, that all returns the same datatype.
+
+IndependentAttack independent_attack(AimMode::CAMERA_MODE);
+BetterDefend better_defend;
 // OneRobot one_robot_mode;
 // BetterDefend better_defend_mode;
 // uint8_t previous_mode = 0;
@@ -62,21 +96,23 @@ float time_end = millis();
 void setup() {
   // put your setup code here, to run once:
 
-
+  // initialising UART communication and USB debugging.
   Serial.begin(921600);
   Serial1.begin(921600); // Line Sensor
   Serial6.begin(921600); // IR Sensor
   Serial3.begin(115200); // Camera
 
+
+  // initialising GPIO
   pinMode(DEBUG_LED, OUTPUT);
-  // pinMode(30, INPUT);
+
   // Drive motors
   pinMode(TL_PWM, OUTPUT); pinMode(TR_PWM, OUTPUT); pinMode(BL_PWM, OUTPUT); pinMode(BR_PWM, OUTPUT);
   analogWriteFrequency(TL_PWM, 20000); analogWriteFrequency(TR_PWM, 20000);
   analogWriteFrequency(BL_PWM, 20000); analogWriteFrequency(BR_PWM, 20000);
   pinMode(TL_DIR, OUTPUT); pinMode(TR_DIR, OUTPUT); pinMode(BL_DIR, OUTPUT); pinMode(BR_DIR, OUTPUT);
 
-  // digitalWrite(TL_PWM, 1); digitalWrite(TR_PWM, 1); digitalWrite(BL_PWM, 1); digitalWrite(BR_PWM, 1);
+  // make sure all the driver motors are stopped.
   motor_ctrl.stop_motors();
 
   // Start buttons
@@ -92,7 +128,7 @@ void setup() {
   pinMode(DR_PWM, OUTPUT);
   pinMode(DR_DIR, OUTPUT);
 
-  pos_sys.setup(); // initialise bno055
+  pos_sys.setup(); // initialise the bno055 gyro and sparkfun OTOS
 
   // Display Setup
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
@@ -116,6 +152,7 @@ void setup() {
   // analogWrite(TL_PWM, 256);
   // analogWrite(BL_PWM, 256);
   // analogWrite(BR_PWM, 256);
+  better_defend.reset();
 }
 
 
@@ -166,16 +203,17 @@ void loop() {
   line_sensor.send_bot_data(self_data);
   BotData other_data = line_sensor.other_data;
 
-  OutputData output = independent_attack.update(self_data, other_data, 0.0);
+  // OutputData output = independent_attack.update(self_data, other_data, 0.0);
+  OutputData output = better_defend.update(self_data, other_data, 0.0);
 
-
-  // Vector goal_vec = opp_goal_pos_vector.relative_to(self_data.pos_vector);
-  // Serial.printf("heading: %.2f\n", heading * 180.0 / M_PI);
-  if (self_data.line_vector.magnitude() != 0) {
-    output.angle = self_data.line_vector.heading() + M_PI;
-  }
+  // if (self_data.line_vector.magnitude() != 0) {
+  //   output.angle = self_data.line_vector.heading() + M_PI;
+  // }
+  check_line(self_data.heading, self_data.line_vector, &pos_sys, &output.angle);
   
-  
+  sfe_otos_pose2d_t pose;
+  pos_sys.otos.sparkfun_otos.getPosition(pose);
+  Serial.printf("x: %.2f, y: %.2f, h: %.2f \n", pose.x, pose.y, pose.h);
   if (!robot_start || self_data.ball_strength == 0) {
     // speed = 0;
     motor_ctrl.stop_motors();
@@ -184,6 +222,8 @@ void loop() {
 
     motor_ctrl.run_motors(output.speed, output.angle, output.rotation);
   }
+  Vector g_vec = opp_goal_pos_vector.relative_to(self_data.pos_vector);
+  // Serial.printf("%.2f\n", g_vec.heading() * 180.0 / M_PI);
 
 
 
@@ -199,6 +239,9 @@ void loop() {
   
   digitalWrite(DEBUG_LED, HIGH);
 }
+
+
+
 
 bool set_robot_pos() {
   if (!digitalRead(BTN_1)) {

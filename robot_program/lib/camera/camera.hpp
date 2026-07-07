@@ -2,6 +2,10 @@
 #define CAMERA_HPP
 #pragma once
 
+/*
+We use the camera to identify the direction of the goal.
+*/
+
 #include <iostream>
 #include <Arduino.h>
 #include <cmath>

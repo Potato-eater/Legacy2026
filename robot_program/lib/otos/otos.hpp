@@ -9,7 +9,9 @@
 
 class OTOS {
     private:
+    public:
     QwiicOTOS sparkfun_otos;
+    private:
     float total_y = 0;
     float previous_y = 0;
     public:
