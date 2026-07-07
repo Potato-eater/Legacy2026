@@ -20,7 +20,7 @@
 #include "pid.hpp"
 #include "camera.hpp"
 #include "compute.hpp"
-
+#include "vector2.hpp"
 #include <SPI.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
@@ -213,19 +213,23 @@ void loop() {
   
   sfe_otos_pose2d_t pose;
   pos_sys.otos.sparkfun_otos.getPosition(pose);
-  Serial.printf("x: %.2f, y: %.2f, h: %.2f \n", pose.x, pose.y, pose.h);
-  if (!robot_start || self_data.ball_strength == 0) {
-    // speed = 0;
-    motor_ctrl.stop_motors();
-  }
-  else {
+  // Serial.printf("x: %.2f, y: %.2f, h: %.2f \n", pose.x, pose.y, pose.h);
+  // if (!robot_start || self_data.ball_strength == 0) {
+  //   // speed = 0;
+  //   motor_ctrl.stop_motors();
+  // }
+  // else {
 
-    motor_ctrl.run_motors(output.speed, output.angle, output.rotation);
-  }
-  Vector g_vec = opp_goal_pos_vector.relative_to(self_data.pos_vector);
+  //   motor_ctrl.run_motors(output.speed, output.angle, output.rotation);
+  // }
+  motor_ctrl.stop_motors();
+  // Vector g_vec = opp_goal_pos_vector.relative_to(self_data.pos_vector);
   // Serial.printf("%.2f\n", g_vec.heading() * 180.0 / M_PI);
 
 
+  CompVec result_v = calc_ball_vector(CompVec(1,0), CompVec(0, 1), PolVec(1, M_PI_4), PolVec(1, M_PI/6));
+
+  Serial.printf("%.2f, %.2f\n", result_v.get_i(), result_v.get_j());
 
 
 
