@@ -63,7 +63,7 @@ IRSensor ir_sensor;
 LineSensor line_sensor;
 Camera camera;
 PositionSystem pos_sys;
-
+DribblerMotor dribbler(DR_DIR, DR_PWM);
 MotorController motor_ctrl;
 
 bool robot_start = false; // thie variable defines if the robot should move.
@@ -72,7 +72,7 @@ bool button_pressed = false;
 bool prev_robot_state = false;
 
 float heading_offset = 0;
-DribblerMotor dribbler(DR_DIR, DR_PWM);
+// DribblerMotor dribbler(DR_DIR, DR_PWM);
 Adafruit_SSD1306 display(128, 32, &Wire, -1);
 
 // Modes
@@ -204,16 +204,19 @@ void loop() {
   BotData other_data = line_sensor.other_data;
 
   // OutputData output = independent_attack.update(self_data, other_data, 0.0);
-  OutputData output = better_defend.update(self_data, other_data, 0.0);
+  OutputData output = independent_attack.update(self_data, other_data, 0.0);
+  // if (self_data.ball_strength > other_data.ball_strength) {
+  //   output = independent_attack.update(self_data, other_data, 0.0);
+  // }
+  // else {
+  //   output = better_defend.update(self_data, other_data, 0.0);
+  // }
 
   // if (self_data.line_vector.magnitude() != 0) {
   //   output.angle = self_data.line_vector.heading() + M_PI;
   // }
   check_line(self_data.heading, self_data.line_vector, &pos_sys, &output.angle);
   
-  sfe_otos_pose2d_t pose;
-  pos_sys.otos.sparkfun_otos.getPosition(pose);
-  Serial.printf("x: %.2f, y: %.2f, h: %.2f \n", pose.x, pose.y, pose.h);
   if (!robot_start || self_data.ball_strength == 0) {
     // speed = 0;
     motor_ctrl.stop_motors();
@@ -224,7 +227,7 @@ void loop() {
   }
   Vector g_vec = opp_goal_pos_vector.relative_to(self_data.pos_vector);
   // Serial.printf("%.2f\n", g_vec.heading() * 180.0 / M_PI);
-
+  Serial.printf("%d\n", line_sensor.other_data_received);
 
 
 
@@ -236,7 +239,7 @@ void loop() {
 
 
   prev_robot_state = robot_start;
-  
+  dribbler.run();
   digitalWrite(DEBUG_LED, HIGH);
 }
 

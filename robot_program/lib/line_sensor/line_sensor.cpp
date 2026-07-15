@@ -1,7 +1,7 @@
 #include "line_sensor.hpp"
 
 // Read data from Line sensor using UART
-bool LineSensor::read_serial(float* result) {
+bool LineSensor::read_serial(uint8_t* result) {
     const size_t max_buffer = 256;
     uint8_t buffer[max_buffer];
     int len = 0;
@@ -43,12 +43,19 @@ void LineSensor::send_bot_data(BotData self_data) {
 }
 
 void LineSensor::update() {
-    float data[TOTAL_BYTES];
+    uint8_t data[TOTAL_BYTES];
+
     this->read_success = this->read_serial(data);
+
     if (this->read_success) {
-        this->angle = data[0];
-        this->distance = data[1];
-        memcpy(&this->other_data, &data[2], sizeof(BotData));
+        memcpy(&this->angle, &data[0], sizeof(float));
+        memcpy(&this->distance, &data[sizeof(float)], sizeof(float));
+
+        memcpy(&this->other_data,
+               &data[2 * sizeof(float)],
+               sizeof(BotData));
+
+        this->other_data_received = data[2 * sizeof(float) + sizeof(BotData)];
     }
 }
 

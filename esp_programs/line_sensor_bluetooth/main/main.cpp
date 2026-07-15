@@ -254,7 +254,7 @@ extern "C" void app_main(void) {
         
         if (data_received) {
             received_data = incoming_data;
-            data_received = false;
+
             not_received = 0;
         }
         else {
@@ -277,6 +277,7 @@ extern "C" void app_main(void) {
         // send_int_array_as_bytes(tcrt_values, CHANNEL_NUM);
         send_float_array_as_bytes(send_value, 2);
         uart_write_bytes(UART_PORT_NUM, (const uint8_t*)&received_data, sizeof(received_data));
+        uart_write_bytes(UART_PORT_NUM, (const bool*)&data_received, sizeof(bool));
 
         esp_err_t send_ret = esp_now_send(NULL, (uint8_t*)&teensy_data, sizeof(teensy_data));
         
@@ -287,6 +288,7 @@ extern "C" void app_main(void) {
         for (int i = 0; i < 6; i++) {
             printf("\\%X", this_mac[i]);
         }
+        printf(" %d ", data_received);
         printf(" ");
         for (int i = 0; i < CHANNEL_NUM; i++) {
             printf("%1d: %ld ", i + 1, tcrt_values[i]);
@@ -295,7 +297,7 @@ extern "C" void app_main(void) {
         // printf("angle: %.5f, distance: %4f", result[0], result[1]);
         printf("\n");
         fflush(stdout);
-        
+        data_received = false;
         start_time = esp_timer_get_time();
     }
         // vTaskDelay(pdMS_TO_TICKS(15));
