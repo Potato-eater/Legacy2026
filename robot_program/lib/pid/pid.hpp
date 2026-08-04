@@ -5,6 +5,8 @@
 
 #include "vector.hpp"
 
+// our own implementation of a PID controller. used in going to a position accurately.
+
 class PID {
     public:
     const float PROPORTIONAL_CONSTANT = 2.0;

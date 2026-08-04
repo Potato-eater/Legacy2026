@@ -1,5 +1,6 @@
 #include "calc.hpp"
 
+// year 11 Math Specialist level of knowledge recommended.
 ComponentVector::ComponentVector(float i, float j) {
     this->i = i;
     this->j = j;
@@ -25,7 +26,7 @@ ComponentVector ComponentVectorFromArgument(float magnitude, float argument) {
 }
 
 
-
+// sort based on magnitude
 std::array<PolarVector, 16> SortPolarVectors(std::array<PolarVector, 16> arr, std::array<uint8_t, 16> *indexes) {
     std::array<PolarVector, 16> sorting_array = arr;
     // std::array<uint8_t, 16> indexes;

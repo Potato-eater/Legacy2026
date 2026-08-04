@@ -1,7 +1,7 @@
 #ifndef SENSOR_HPP
 #define SENSOR_HPP
 
-
+// main sensro specific calculations
 #include <array>
 extern "C" {
     #include <stdio.h>
@@ -27,8 +27,8 @@ class SensorRing {
 
     void get_sorted_vectors();
 
-    PolarVector simpleRead();
-    std::array<float, 4> advancedRead();
+    PolarVector simpleRead(); // find highest value
+    std::array<float, 4> advancedRead(); // do advanced interpolation stuff.
 };
 
 

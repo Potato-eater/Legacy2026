@@ -41,7 +41,7 @@ void LineSensor::send_bot_data(BotData self_data) {
     memcpy(&buffer[1], &self_data, sizeof(BotData));
     Serial1.write(buffer, sizeof(BotData) + 1);
 }
-
+// updating the line sensor.
 void LineSensor::update() {
     uint8_t data[TOTAL_BYTES];
 

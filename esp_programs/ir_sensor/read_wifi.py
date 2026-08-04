@@ -1,3 +1,4 @@
+# small test program. not used.
 import socket
 import struct
 

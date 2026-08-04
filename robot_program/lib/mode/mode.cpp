@@ -213,6 +213,9 @@ OutputData BetterDefend::update(BotData &self_data, BotData &other_data, float l
         else {
             this->rotation = this->get_rotation(self_data.ball_angle, self_data.heading);
         }
+
+        // ACTUAL magical math happening here. if it works, dont touch it.
+        // the robot goes in a semi circle around the goal to defend.
         Vector ball_vector = Vector::from_heading(self_data.ball_angle, DEFEND_OFFSET+DEFEND_Y);
         this->target_vec = Vector(goal_vec.i+ball_vector.i, goal_vec.j+ball_vector.j);
         

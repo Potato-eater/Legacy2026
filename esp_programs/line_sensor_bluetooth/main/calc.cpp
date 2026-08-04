@@ -1,5 +1,5 @@
 #include "calc.hpp"
-
+// same as one in ir_sensor. I won't write it all again.
 MathVector::MathVector(float i, float j) {
     this->i = i;
     this->j = j;

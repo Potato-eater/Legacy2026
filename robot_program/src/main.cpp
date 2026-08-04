@@ -33,25 +33,6 @@ void print_botdata(BotData &bot_data, String message);
 void check_line(float heading, Vector line_vector, PositionSystem *pos_sys, float *move_angle) {
   if (line_vector.magnitude() != 0) {
     *move_angle = line_vector.heading() + M_PI;
-    // Vector current_pos = pos_sys->get_posv();
-
-    // float tolerance = M_PI / 8.0;
-    // if (line_vector.heading() < tolerance && line_vector.heading() > -tolerance) {
-    //   Vector new_pos = Vector(50.0, current_pos.j);
-    //   pos_sys->set_pos(new_pos, heading * 180.0 / M_PI);
-    // }
-    // if (line_vector.heading() < M_3PI_4 && line_vector.heading() > M_PI_4) {
-    //   Vector new_pos = Vector(current_pos.i, 91.5);
-    //   pos_sys->set_pos(new_pos, -heading * 180.0 / M_PI);
-    // }
-    // if (line_vector.heading() < -M_PI + tolerance || line_vector.heading() > M_PI - tolerance) {
-    //   Vector new_pos = Vector(-50.0, current_pos.j);
-    //   pos_sys->set_pos(new_pos, heading * 180.0 / M_PI);
-    // }
-    // if (line_vector.heading() < -M_PI_4 && line_vector.heading() > -M_3PI_4) {
-    //   Vector new_pos = Vector(current_pos.i, -91.5);
-    //   pos_sys->set_pos(new_pos, -heading * 180.0 / M_PI);
-    // }
   }
 }
 
@@ -70,8 +51,9 @@ bool robot_start = false; // thie variable defines if the robot should move.
 
 bool button_pressed = false; 
 bool prev_robot_state = false;
-
-float heading_offset = 0;
+// since we always leave the bno055 on, we never reset its value.
+// we use this heading offset to determine where forwards is.
+float heading_offset = 0;.
 // DribblerMotor dribbler(DR_DIR, DR_PWM);
 Adafruit_SSD1306 display(128, 32, &Wire, -1);
 
@@ -101,6 +83,7 @@ void setup() {
   Serial1.begin(921600); // Line Sensor
   Serial6.begin(921600); // IR Sensor
   Serial3.begin(115200); // Camera
+  // tbh i probably can make the camera baud rate faster but there isnt much point if the camera processes data slower than that anyway.
 
 
   // initialising GPIO
@@ -116,6 +99,7 @@ void setup() {
   motor_ctrl.stop_motors();
 
   // Start buttons
+  // high means not pressed, low means pressed.
   pinMode(BTN_1, INPUT_PULLUP);
   pinMode(BTN_2, INPUT_PULLUP);
   pinMode(BTN_3, INPUT_PULLUP);
@@ -130,6 +114,7 @@ void setup() {
 
   pos_sys.setup(); // initialise the bno055 gyro and sparkfun OTOS
 
+  // we dont actually use the display all the time. but if it is installed, it would display info.
   // Display Setup
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   display.setRotation(2);     
@@ -148,10 +133,6 @@ void setup() {
 
   Serial.println("Awaiting button press");
 
-  // pwmTimer.begin(pwmISR, 10);
-  // analogWrite(TL_PWM, 256);
-  // analogWrite(BL_PWM, 256);
-  // analogWrite(BR_PWM, 256);
   better_defend.reset();
 }
 
@@ -159,16 +140,10 @@ void setup() {
 void loop() {
   // Serial.println("hello world");
   set_robot_pos();
-  // button_pressed = !digitalReadFast(BTN_1) | !digitalReadFast(BTN_2) | !digitalReadFast(BTN_3) | !digitalReadFast(BTN_4) | !digitalReadFast(BTN_5);
   robot_start = !digitalReadFast(BTN_RUN);
-  if (robot_start && prev_robot_state == false) {
-  //   robot_start = true;
-    
+  if (robot_start && prev_robot_state == false) {  
     heading_offset = pos_sys.get_heading();
   }
-  // else if (button_pressed && robot_start == true && prev_button_state == false) {
-  //   robot_start = false;
-  // }
 
   line_sensor.update();
   ir_sensor.update();
@@ -177,10 +152,11 @@ void loop() {
   float heading = pos_sys.get_heading() - heading_offset;
   while (heading >= PI) heading -= 2 * PI;
   while (heading <= -PI) heading += 2 * PI;
-
+  // make sure its -pi to pi
+  // modulo % in c++ doesnt work the same way as python. therefore we need this while true approach.
 
   ir_sensor.angle_correction(heading);
-  line_sensor.angle_correction(heading);
+  line_sensor.angle_correction(heading); // make ir and line sensor account for robot tilt.
 
 
   float ir_angle = ir_sensor.get_angle();
@@ -200,7 +176,7 @@ void loop() {
     .goal_x = camera.goal_x,
   };
 
-  line_sensor.send_bot_data(self_data);
+  line_sensor.send_bot_data(self_data); // send data to the other robot via the line sensor.
   BotData other_data = line_sensor.other_data;
 
   // OutputData output = independent_attack.update(self_data, other_data, 0.0);
@@ -217,8 +193,8 @@ void loop() {
   // }
   check_line(self_data.heading, self_data.line_vector, &pos_sys, &output.angle);
   
-  sfe_otos_pose2d_t pose;
-  pos_sys.otos.sparkfun_otos.getPosition(pose);
+  // sfe_otos_pose2d_t pose;
+  // pos_sys.otos.sparkfun_otos.getPosition(pose);
   // Serial.printf("x: %.2f, y: %.2f, h: %.2f \n", pose.x, pose.y, pose.h);
   // if (!robot_start || self_data.ball_strength == 0) {
   //   // speed = 0;
@@ -228,14 +204,8 @@ void loop() {
 
   //   motor_ctrl.run_motors(output.speed, output.angle, output.rotation);
   // }
+  // Serial.printf("%.2f, %.2f\n", self_data.ball_angle * 180/M_PI, self_data.ball_strength);
   motor_ctrl.stop_motors();
-  // Vector g_vec = opp_goal_pos_vector.relative_to(self_data.pos_vector);
-  // Serial.printf("%.2f\n", g_vec.heading() * 180.0 / M_PI);
-  Serial.printf("%d\n", line_sensor.other_data_received);
-
-  CompVec result_v = calc_ball_vector(CompVec(1,0), CompVec(0, 1), PolVec(1, M_PI_4), PolVec(1, M_PI/6));
-
-  Serial.printf("%.2f, %.2f\n", result_v.get_i(), result_v.get_j());
 
 
 
@@ -246,7 +216,9 @@ void loop() {
 
 
   prev_robot_state = robot_start;
-  dribbler.run();
+  // dribbler.run(100);
+  digitalWriteFast(dribbler.DIR_PIN, 1);
+  digitalWriteFast(dribbler.PWM_PIN, 1);
   digitalWrite(DEBUG_LED, HIGH);
 }
 

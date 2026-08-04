@@ -12,6 +12,8 @@
 #include "vector.hpp"
 #include "pid.hpp"
 #include <Arduino.h>
+// Modes basically defines what the robot would do in each situation.
+
 // Abstract parent class mode - bot data is passed to it and it returns the outputdata
 class Mode {
     protected:

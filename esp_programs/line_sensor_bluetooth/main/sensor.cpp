@@ -1,5 +1,5 @@
 #include "sensor.hpp"
-SensorRing::SensorRing() {
+SensorRing::SensorRing() { // init the ADC reading.
     adc_continuous_handle_cfg_t adc_config = {
         .max_store_buf_size = 512,
         .conv_frame_size = EXAMPLE_READ_LEN,
@@ -15,6 +15,8 @@ SensorRing::SensorRing() {
     adc_digi_pattern_config_t pattern[CHANNEL_NUM] = {0};
     int index = 0;
 
+
+    // have to split it into 2 loops as there are 2 adc units.
     for (int i = 0; i < 10; i++) {
         pattern[index].atten = ADC_ATTEN_DB_12;
         pattern[index].channel = adc1_channels[i];
@@ -38,6 +40,7 @@ SensorRing::SensorRing() {
     ESP_ERROR_CHECK(adc_continuous_start(adc_handle));
 }
 
+// read output of every sensor
 void SensorRing::readRaw(uint8_t result[EXAMPLE_READ_LEN], int32_t adc_values[2][16], adc_digi_output_data_t *output_data) {
     uint32_t ret_bytes = 0;
     esp_err_t ret = adc_continuous_read(adc_handle, result, EXAMPLE_READ_LEN, &ret_bytes, 100);

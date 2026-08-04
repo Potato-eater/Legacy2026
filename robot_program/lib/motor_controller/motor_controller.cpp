@@ -28,6 +28,12 @@ std::array<float, 4> MotorController::scale_speeds(std::array<float, 4> speeds, 
 
 // calculates motor speeds given the final movement angle, speed and rotation of the robot
 std::array<float, 4> MotorController::get_motor_speeds(float movement_speed, float angle, float rotation) {
+
+    // another piece of actual mathematical magic.
+    // this equation outputs -100 at -pi and 100 at pi.
+    // the output is the % speed the robot should put into rotating.
+    // since the motors doesnt always run at what it mathematically should output,
+    // we use this equation to make it turn a bit more aggressively to account for this deviation.
     float rotation_speed = -50 / pow(M_PI, 3) * rotation * (pow(rotation, 2) - 3 * pow(M_PI, 2));
     float remaining = 100 - abs(rotation_speed);
     float max_movement_speed = movement_speed * remaining / 100;

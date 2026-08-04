@@ -4,7 +4,7 @@ extern "C" {
     #include "driver/gpio.h"
 }
 
-
+// simple driver to drive onboard led.
 class Led {
     public:
         gpio_num_t led_pin;  // GPIO pin number for the LED

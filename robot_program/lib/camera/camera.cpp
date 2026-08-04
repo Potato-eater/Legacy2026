@@ -1,6 +1,6 @@
 #include "camera.hpp"
 
-bool Camera::read_serial(int* result, int num_ints) {
+bool Camera::read_serial(int* result, int num_ints) { // reading from the camera.
     const size_t total_bytes = num_ints * sizeof(int);
     const size_t max_buffer = 256;
     uint8_t buffer[max_buffer];

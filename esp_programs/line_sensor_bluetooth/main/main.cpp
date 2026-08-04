@@ -16,12 +16,11 @@ extern "C" {
     #include "esp_timer.h"
     #include "nvs_flash.h"
 }
-// #include "pins.hpp"
 #include "constants.hpp"
 #include "led.hpp"
 #include "sensor.hpp"
 #include "calc.hpp"
-// static const char *TAG = "wifi_ap";
+
 
 #define THRESHOLD 900
 
@@ -156,19 +155,25 @@ void init_esp_now(uint8_t* send_mac, uint8_t* debugger_mac) {
 extern "C" void app_main(void) {
     uint8_t debugger_mac[6];
     memcpy(debugger_mac, "\xD8\x3B\xDA\xC6\xD1\xCA", 6);
+    // debugger is another esp32 device that we connect to our laptop to debug. currently hard coded mac address.
+    // reason why we have debugger is that we do not want the line sensor device to waste power on hosting a wifi
+    // this device is already designed to do communicaiton with the other robot. the debugger just "spies" on the
+    // data.
 
 
 
     Led debug_led((gpio_num_t)45);
     init_uart();
     SensorRing ring;
-    // ESP_ERROR_CHECK(nvs_flash_init());
 
+    // defining the angles of the sensors. i should have used radians but oh well im too lazy to change it.
     std::array<float, 16> sensor_angles = {180, -157.5, -135, -112.5, -90, -67.5, -45, -22.5, 0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5};
     std::array<MathVector, 16> sensor_vectors;
     for (u_int8_t i = 0; i < 16; i++) {
         sensor_vectors[i] = MathVectorFromArgument(6.8, sensor_angles[i] * M_PI/180.0);
     }
+
+    // init values
     uint8_t result[EXAMPLE_READ_LEN];
     adc_digi_output_data_t *output_data = NULL;
     int32_t adc_values[2][16] = {{-1}}; // [unit][channel], safe with overprovisioned index
@@ -187,12 +192,12 @@ extern "C" void app_main(void) {
 
     uint8_t this_mac[6];
     uint8_t other_mac[6];
-    find_other_mac_address(this_mac, other_mac);
+    find_other_mac_address(this_mac, other_mac); // finding the mac address of the device that should receive the data.
     init_esp_now(other_mac, debugger_mac);
-    while (true) {
+    while (true) { // repeat forever. no reason to stop.
         ring.readRaw(result, adc_values, output_data);
         
-        int32_t tcrt_values[CHANNEL_NUM] = {
+        int32_t tcrt_values[CHANNEL_NUM] = { // since we need to read from the ADC, and that the pins are mismatched, we have to do this.
             adc_values[0][TCRT1],
             adc_values[0][TCRT2],
             adc_values[0][TCRT3],
@@ -219,36 +224,21 @@ extern "C" void app_main(void) {
         }
         if (led_on) {
             debug_led.set_level(1);
-        }
+        } // if the sensor sees the line, then turn on the led
         else {
             debug_led.set_level(0);
         }
-        // while (true) {
-        //     char read_value[1];
-        //     uart_read_bytes(UART_PORT_NUM, &read_value, 1, pdMS_TO_TICKS(1000));
-        //     if (read_value[0] == 'e') {
-        //         break;
-        //     }
-        //     esp_restart();
-        // }
-
-        
 
         std::array<bool, CHANNEL_NUM> whites = find_white(tcrt_values, THRESHOLD);
-        // std::array<bool, CHANNEL_NUM> whites = {true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false};
-        std::array<float, 2> result = find_line(whites, sensor_vectors);
+        std::array<float, 2> result = find_line(whites, sensor_vectors); // find the final result
 
-        float send_value[2] = {result[0], result[1]};
+        float send_value[2] = {result[0], result[1]}; // direction and distance
         
         uart_wait_tx_done(UART_PORT_NUM, pdMS_TO_TICKS(1));
-        // printf("%s", "should have writen the stuff");
-        // for (int i = 0; i < CHANNEL_NUM; i++) {
-        //     printf("%d, ", whites[i]);
-        // }
-        BotData teensy_data;
-        // bool read_teensy_success = false;
+        BotData teensy_data; // reading what the main mcu is sending this sensor
+
         if (read_teensy(&teensy_data)) {
-            // printf("pos %.2f %.2f \n", teensy_data.pos_vector.i, teensy_data.pos_vector.j);
+            // do nothing rn, but if we want debugging info, put stuff here.
         }
 
         
@@ -274,16 +264,13 @@ extern "C" void app_main(void) {
             // printf("probably disconnected");
         }
         uart_write_bytes(UART_PORT_NUM, "e", 1);
-        // send_int_array_as_bytes(tcrt_values, CHANNEL_NUM);
         send_float_array_as_bytes(send_value, 2);
         uart_write_bytes(UART_PORT_NUM, (const uint8_t*)&received_data, sizeof(received_data));
         uart_write_bytes(UART_PORT_NUM, (const bool*)&data_received, sizeof(bool));
 
         esp_err_t send_ret = esp_now_send(NULL, (uint8_t*)&teensy_data, sizeof(teensy_data));
         
-        // printf("%d", read_teensy(&teensy_data));
         end_time = esp_timer_get_time();
-        // printf(" received xy %.2f %.2f not_received %ld ", received_data.pos_vector.i, received_data.pos_vector.j, not_received); // use this to see if it is receiving data
         printf("time: %lld ms ", (end_time - start_time) / 1000);
         for (int i = 0; i < 6; i++) {
             printf("\\%X", this_mac[i]);
@@ -293,12 +280,9 @@ extern "C" void app_main(void) {
         for (int i = 0; i < CHANNEL_NUM; i++) {
             printf("%1d: %ld ", i + 1, tcrt_values[i]);
         }
-        // printf("%f %f ", send_value[0], send_value[1]);
-        // printf("angle: %.5f, distance: %4f", result[0], result[1]);
         printf("\n");
         fflush(stdout);
         data_received = false;
         start_time = esp_timer_get_time();
     }
-        // vTaskDelay(pdMS_TO_TICKS(15));
 }

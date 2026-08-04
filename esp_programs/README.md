@@ -1,2 +1,3 @@
-- all the programs that we have for the esp32 s2.
-- otherwise known as the programs for the ir sensor and line sensor.
+- all the programs that we have for the esp32 s2 units in the robot.
+- the program for the ir sensor and line sensor.
+- the other 2 programs are temporary testing projects. it can be ignored.

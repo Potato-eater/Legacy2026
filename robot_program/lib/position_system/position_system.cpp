@@ -45,7 +45,7 @@ void PositionSystem::set_pos(Vector posv, float heading) {
 }
 
 void PositionSystem::setup() {
-    this->bno_ok = this->bno.begin();
+    this->bno_ok = this->bno.begin(OPERATION_MODE_IMUPLUS);
     this->bno.setExtCrystalUse(true);
     this->otos.set_up();
 }
