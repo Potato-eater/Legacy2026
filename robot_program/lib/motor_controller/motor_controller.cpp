@@ -38,13 +38,13 @@ std::array<float, 4> MotorController::get_motor_speeds(float movement_speed, flo
     float remaining = 100 - abs(rotation_speed);
     float max_movement_speed = movement_speed * remaining / 100;
     Vector mv = Vector::from_heading(angle, 1);
-    std::array<float, 4> movement_speeds = {
+    std::array<float, 4> movement_speeds = { // calculating the ratio of each motor speed
         -mv.i - mv.j,
         -mv.i + mv.j,
         mv.i - mv.j,
         mv.i + mv.j,
     };
-    std::array<float, 4> final_speed = this->scale_speeds(movement_speeds, max_movement_speed);
+    std::array<float, 4> final_speed = this->scale_speeds(movement_speeds, max_movement_speed); // scale that ratio to the final speed
     for (int i = 0; i < 4; i++) {
         final_speed[i] += rotation_speed;
     }

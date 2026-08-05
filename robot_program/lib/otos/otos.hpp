@@ -6,7 +6,10 @@
 #include <iostream>
 #include <SparkFun_Qwiic_OTOS_Arduino_Library.h>
 #include "vector.hpp"
-
+// using the sparkfun optical tracking odometry sensor (mouse sensor),
+// we can accurately find the location of the robot without needing to
+// rely on distance sensors like ultrasonics or lasers, as they are prone to interference.
+// This sensor works well in a short term but error can build up.
 class OTOS {
     private:
     public:

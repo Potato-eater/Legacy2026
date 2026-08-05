@@ -53,7 +53,7 @@ bool button_pressed = false;
 bool prev_robot_state = false;
 // since we always leave the bno055 on, we never reset its value.
 // we use this heading offset to determine where forwards is.
-float heading_offset = 0;.
+float heading_offset = 0;
 // DribblerMotor dribbler(DR_DIR, DR_PWM);
 Adafruit_SSD1306 display(128, 32, &Wire, -1);
 
@@ -114,9 +114,11 @@ void setup() {
 
   pos_sys.setup(); // initialise the bno055 gyro and sparkfun OTOS
 
-  // we dont actually use the display all the time. but if it is installed, it would display info.
+  // we dont actually use the display all the time. If it is installed, it would display info.
+  // After extensive testing, we found that we cannot really put live data onto this screen,
+  // It updates a bit too slow, the other functions cannot run until its done.
   // Display Setup
-  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // average i2c device
   display.setRotation(2);     
   display.setTextColor(SSD1306_WHITE);
   display.cp437(true);  
@@ -163,7 +165,7 @@ void loop() {
   while (ir_angle < -PI) ir_angle += 2*PI;
   while (ir_angle > PI) ir_angle -= 2*PI;
 
-  if (ir_sensor.get_magnitude() == 0) {
+  if (ir_sensor.get_magnitude() == 0) { // if the ball is not seen, there cannot be an angle.
     ir_angle = 0;
   }
   BotData self_data = {
@@ -191,11 +193,8 @@ void loop() {
   // if (self_data.line_vector.magnitude() != 0) {
   //   output.angle = self_data.line_vector.heading() + M_PI;
   // }
-  check_line(self_data.heading, self_data.line_vector, &pos_sys, &output.angle);
+  check_line(self_data.heading, self_data.line_vector, &pos_sys, &output.angle); // stops the robot from getting out of the line.
   
-  // sfe_otos_pose2d_t pose;
-  // pos_sys.otos.sparkfun_otos.getPosition(pose);
-  // Serial.printf("x: %.2f, y: %.2f, h: %.2f \n", pose.x, pose.y, pose.h);
   // if (!robot_start || self_data.ball_strength == 0) {
   //   // speed = 0;
   //   motor_ctrl.stop_motors();
@@ -206,14 +205,6 @@ void loop() {
   // }
   // Serial.printf("%.2f, %.2f\n", self_data.ball_angle * 180/M_PI, self_data.ball_strength);
   motor_ctrl.stop_motors();
-
-
-
-
-
-
-
-
 
   prev_robot_state = robot_start;
   // dribbler.run(100);
