@@ -195,16 +195,16 @@ void loop() {
   // }
   check_line(self_data.heading, self_data.line_vector, &pos_sys, &output.angle); // stops the robot from getting out of the line.
   
-  // if (!robot_start || self_data.ball_strength == 0) {
-  //   // speed = 0;
-  //   motor_ctrl.stop_motors();
-  // }
-  // else {
+  if (!robot_start || self_data.ball_strength == 0) {
+    // speed = 0;
+    motor_ctrl.stop_motors();
+  }
+  else {
 
-  //   motor_ctrl.run_motors(output.speed, output.angle, output.rotation);
-  // }
+    motor_ctrl.run_motors(output.speed, output.angle, output.rotation);
+  }
   // Serial.printf("%.2f, %.2f\n", self_data.ball_angle * 180/M_PI, self_data.ball_strength);
-  motor_ctrl.stop_motors();
+  // motor_ctrl.stop_motors();
 
   prev_robot_state = robot_start;
   // dribbler.run(100);

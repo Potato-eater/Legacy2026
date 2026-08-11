@@ -3,9 +3,9 @@
 PID linear_pid;
 Vector find_closest_neutral_point(Vector pos) {
     std::vector<Vector> neutral_points = {
-        Vector(0, 0),
-        Vector(30, 0),
-        Vector(-30, 0),
+        Vector(0, -30),
+        Vector(30, -30),
+        Vector(-30, -30),
     };
     Vector closest_point = neutral_points[0];
     float closest_dist = (pos.relative_to(closest_point)).magnitude();
