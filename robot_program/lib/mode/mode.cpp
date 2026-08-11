@@ -3,9 +3,9 @@
 PID linear_pid;
 Vector find_closest_neutral_point(Vector pos) {
     std::vector<Vector> neutral_points = {
-        Vector(0, 0),
-        Vector(30, 0),
-        Vector(-30, 0),
+        Vector(0, -25.0),
+        Vector(35, -25.0),
+        Vector(-35, -25.0), 
     };
     Vector closest_point = neutral_points[0];
     float closest_dist = (pos.relative_to(closest_point)).magnitude();
@@ -106,10 +106,6 @@ float IndependentAttack::calculate_move_angle_otos(float heading, float ball_ang
 
     return 0.0;
 }
-float IndependentAttack::calculate_move_angle_camera_otos(Vector goal_vec, float heading, float ball_angle, float ball_magnitude) {
-    // throw "dont use this function.";
-    return 0.0;
-}
 
 
 
@@ -157,21 +153,46 @@ OutputData IndependentAttack::update(BotData &self_data, BotData &other_data, fl
             break;
         }
 
-        case CAMERA_OTOS_MODE: { // not tested yet.
-            int pixel_diff = self_data.goal_x - 80;
-            rotation = pixel_diff * -(M_PI / 160.0);
-            if (self_data.goal_x == -1) {
+        case CAMERA_OTOS_MODE: {
+	        const Vector goal_left(-22.5, 91.5);
+	        const Vector goal_right(22.5, 91.5);
+
+	        float heading_to_left = goal_left.relative_to(self_data.pos_vector).heading() - (M_PI / 18);
+	        float heading_to_right = goal_right.relative_to(self_data.pos_vector).heading() + (M_PI / 18);
+	        int pixel_diff = self_data.goal_x - 80;
+            rotation = pixel_diff * -(M_PI / 160.0); 
+            float relative_camera_angle = rotation + self_data.heading;
+	
+	        if (self_data.goal_x == -1) {
                 pixel_diff = 0;
+		        Vector opp_goal_vector = opp_goal_pos_vector.relative_to(self_data.pos_vector);
+                rotation = opp_goal_vector.heading() - heading - M_PI_2;
+                mv_angle = this->calculate_move_angle_otos(heading, self_data.ball_angle, self_data.ball_strength, opp_goal_vector);
+                break;
+            }    
+            else if (heading_to_left >= relative_camera_angle && relative_camera_angle >= heading_to_right) {
+                mv_angle = this->calculate_move_angle_camera(heading, self_data.ball_angle, self_data.ball_strength); 
+                break;
+	        }
+            else {
                 Vector opp_goal_vector = opp_goal_pos_vector.relative_to(self_data.pos_vector);
                 rotation = opp_goal_vector.heading() - heading - M_PI_2;
                 mv_angle = this->calculate_move_angle_otos(heading, self_data.ball_angle, self_data.ball_strength, opp_goal_vector);
                 break;
-            }
-            mv_angle = this->calculate_move_angle_camera(heading, self_data.ball_angle, self_data.ball_strength);
-            break;
-        }
+		}
+break;
+}
+
         
     };
+    if (self_data.ball_strength == 0) {
+        Vector mv_vec = find_closest_neutral_point(self_data.pos_vector);
+        mv_angle = mv_vec.relative_to(self_data.pos_vector).heading();
+        rotation = -heading;
+        speed = 80;
+        dribbler_on = false;
+        
+    }
     while (rotation > M_PI) rotation -= 2*M_PI;
     while (rotation < -M_PI) rotation += 2*M_PI;
 

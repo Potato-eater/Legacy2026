@@ -40,7 +40,7 @@ class IndependentAttack : public Mode {
     private:
     enum AimMode aim_mode;
     float calculate_move_angle_straight(float heading, float ball_angle, float ball_magnitude);
-    float calculate_move_angle_otos(float heading, float ball_angle, float ball_magnitude, Vector current_pos);
+    float calculate_move_angle_otos(float heading, float ball_angle, float ball_magnitude, Vector goal_vec);
     float calculate_move_angle_camera(float heading, float ball_angle, float ball_magnitude);
     float calculate_move_angle_camera_otos(Vector goal_vec, float heading, float ball_angle, float ball_magnitude);
 
@@ -70,4 +70,4 @@ class BetterDefend : public Mode {
 
 
 
-#endif
+#endif 
