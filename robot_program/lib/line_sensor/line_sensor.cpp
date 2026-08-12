@@ -1,6 +1,7 @@
 #include "line_sensor.hpp"
 
 // Read data from Line sensor using UART
+// Same logic as Camera and Ir sensor.
 bool LineSensor::read_serial(uint8_t* result) {
     const size_t max_buffer = 256;
     uint8_t buffer[max_buffer];
@@ -35,11 +36,11 @@ bool LineSensor::read_serial(uint8_t* result) {
 }
 
 // send data for robot communication
-void LineSensor::send_bot_data(BotData self_data) {
+void LineSensor::send_bot_data(BotData self_data) { 
     uint8_t buffer[sizeof(BotData) + 1];
     buffer[0] = 'd';
-    memcpy(&buffer[1], &self_data, sizeof(BotData));
-    Serial1.write(buffer, sizeof(BotData) + 1);
+    memcpy(&buffer[1], &self_data, sizeof(BotData)); // copy struct data into a byte array
+    Serial1.write(buffer, sizeof(BotData) + 1); // sending the data
 }
 // updating the line sensor.
 void LineSensor::update() {
@@ -47,7 +48,7 @@ void LineSensor::update() {
 
     this->read_success = this->read_serial(data);
 
-    if (this->read_success) {
+    if (this->read_success) { // if there is a message received, then read the data
         memcpy(&this->angle, &data[0], sizeof(float));
         memcpy(&this->distance, &data[sizeof(float)], sizeof(float));
 

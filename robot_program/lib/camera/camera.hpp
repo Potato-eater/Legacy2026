@@ -17,8 +17,12 @@ class Camera {
 
     bool read_success = false;
 
+    // reading data from the camera
     bool read_serial(int* result, int num_ints);
-    void update(); // call update every loop to read serial
+
+    // update camera data
+    // this must be called every loop
+    void update(); 
 };
 
 #endif

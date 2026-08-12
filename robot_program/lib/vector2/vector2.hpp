@@ -9,6 +9,8 @@
 
 #include "constants.h"
 
+// Cruz's own version of vectors
+
 class Vector2 {
     public:
     virtual float get_magnitude();

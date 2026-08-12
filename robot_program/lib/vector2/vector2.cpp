@@ -6,11 +6,6 @@
 #include "vector2.hpp"
 
 
-
-
-
-
-
 CompVec::CompVec(float i, float j) {
     this->i = i;
     this->j = j;

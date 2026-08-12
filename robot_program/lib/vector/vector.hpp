@@ -25,7 +25,7 @@ class Vector {
     Vector relative_to(Vector vec2) const;
 
     /* heading in radians */
-    static Vector from_heading(float heading, float magnitude) {
+    static Vector from_heading(float heading, float magnitude) { // initialise vectors from angle and magnitude
         return Vector(cos(heading)*magnitude, sin(heading)*magnitude);
     };
     static Vector sum_vectors(std::vector<Vector> vec_list) {

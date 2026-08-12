@@ -11,14 +11,14 @@ float PID::min(float var1, float var2) {
     return var2;
 }
 
-double PID::compute(double error, double dt) {
+double PID::compute(double error, double dt) { // calculates result based on deviation from the expected value.
     this->integral += error * dt;
     this->derivitive = (error - this->previous_error) / dt;
     this->previous_error = error;
     return this->PROPORTIONAL_CONSTANT * error + this->INTEGRAL_CONSTANT * this->integral + this->DERIVETIVE_CONSTANT * this->derivitive; 
 }
 
-Vector PID::get_movement(Vector pos, Vector target_pos, float max_speed, double dt) {
+Vector PID::get_movement(Vector pos, Vector target_pos, float max_speed, double dt) { // allows the robot to move to a specific point
     Vector target_pos_relative = Vector(target_pos.i-pos.i, target_pos.j-pos.j);
     float distance = target_pos_relative.magnitude();
 

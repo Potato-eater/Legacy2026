@@ -15,17 +15,21 @@ const Vector opp_goal_pos_vector(0, 82.0);
 const Vector own_goal_pos_vector(0, -82.0);
 
 // Tolerance and Distances
+
+// ultrasonics are not used anymore. These 2 can be ignored.
 const int ULTRASONIC_TOLERANCE = 20;
 const float ULTRASONIC_TO_ROBOT = 9.5;
+
+
 const float FORWARD_TOLERANCE = M_PI/11;
 const float DEFEND_DIST = 30; // not used by better defend
-const int SLOW_DOWN_DIST = 15;
+const int SLOW_DOWN_DIST = 15; // where the robot should release the ball
 
 const int BALL_STRENGTH_LIMIT = 25; // the number lower than this means the ball is far away
 
 // Limits
 const float MAX_SPEED = 100;
-const float RELEASE_SPEED = 30;
+const float RELEASE_SPEED = 30; // how fast to go when releasing
 const float ball_triangulation_angle_limit = 1*M_PI/18; // 10 degrees
 
 // BETTER DEFEND
