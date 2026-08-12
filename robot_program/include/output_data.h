@@ -5,12 +5,12 @@
 
 #include <iostream>
 
-// A struct for robot outputs (angle refers to the movement angle)
+// A struct for mode outputs
 struct OutputData {
-    float angle;
-    float speed;
-    float rotation;
-    bool dribbler_on;
+    float angle; // which way the robot should be going
+    float speed; // how fast the robot should go
+    float rotation; // how much the robot needs to rotate
+    bool dribbler_on; // if the dribbler should be on currently.
 };
 
 #endif

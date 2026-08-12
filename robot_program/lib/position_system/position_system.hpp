@@ -10,7 +10,7 @@
 #include "otos.hpp"
 #include "constants.h"
 
-// Wrapper class for OTOS and BNO055 (initially for Ultrasonics as well but we don't use those)
+// Wrapper class for OTOS and BNO055 (initially for Ultrasonics as well but we don't use those anymore)
 class PositionSystem {
     private:
     Adafruit_BNO055 bno;

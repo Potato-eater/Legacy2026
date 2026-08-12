@@ -1,7 +1,7 @@
 #include "mode.hpp"
 
 PID linear_pid;
-Vector find_closest_neutral_point(Vector pos) {
+Vector find_closest_neutral_point(Vector pos) { // find the closest neutral point.
     std::vector<Vector> neutral_points = {
         Vector(0, 0),
         Vector(30, 0),
@@ -22,7 +22,7 @@ Vector find_closest_neutral_point(Vector pos) {
 // get robot rotation value to face a target angle
 float Mode::get_rotation(float target_angle, float heading) {
     float rotation = target_angle - heading - M_PI_2;
-    while (rotation > M_PI) rotation -= 2*M_PI;
+    while (rotation > M_PI) rotation -= 2*M_PI; // normalising
     while (rotation < -M_PI) rotation += 2*M_PI;
     return rotation;
 }
@@ -33,7 +33,7 @@ IndependentAttack::IndependentAttack(AimMode aim_mode) {
 
 // kicks the ball straight. No goal targetting.
 float IndependentAttack::calculate_move_angle_straight(float heading, float ball_angle, float ball_magnitude) {
-    if (ball_magnitude < BALL_STRENGTH_LIMIT) {
+    if (ball_magnitude < BALL_STRENGTH_LIMIT) { // if the ball is far away
         return ball_angle;
     }
     float lim_up = M_PI_2 + FORWARD_TOLERANCE;
@@ -121,7 +121,7 @@ OutputData IndependentAttack::update(BotData &self_data, BotData &other_data, fl
     while (heading > M_PI) heading -= 2 * M_PI;
     while (heading < -M_PI) heading += 2 * M_PI;
 
-    switch (this->aim_mode) {
+    switch (this->aim_mode) { // decide what to do based on current mode.
         case STRAIGHT_MODE: {
             mv_angle = this->calculate_move_angle_straight(heading, self_data.ball_angle, self_data.ball_strength);
             rotation = -heading;
@@ -137,6 +137,7 @@ OutputData IndependentAttack::update(BotData &self_data, BotData &other_data, fl
             break;
         }
         case OTOS_REFLECTION_MODE: { // this is the same thing as OTOS_MODE except it aims into the reflection of the goal.
+            // not finished. DO NOT USE.
             Vector aim_vec = opp_goal_pos_vector;
             aim_vec.i -= 150;
 
@@ -148,7 +149,7 @@ OutputData IndependentAttack::update(BotData &self_data, BotData &other_data, fl
 
         case CAMERA_MODE: {
             int pixel_diff = self_data.goal_x - 80;
-            rotation = pixel_diff * -(M_PI / 160.0);
+            rotation = pixel_diff * -(M_PI / 160.0); // find how much the robot should rotate.
             if (self_data.goal_x == -1) {
                 pixel_diff = 0;
                 rotation = -heading;
@@ -214,7 +215,7 @@ OutputData BetterDefend::update(BotData &self_data, BotData &other_data, float l
             this->rotation = this->get_rotation(self_data.ball_angle, self_data.heading);
         }
 
-        // ACTUAL magical math happening here. if it works, dont touch it.
+        // ACTUAL mathematical magic happening here. if it works, dont touch it.
         // the robot goes in a semi circle around the goal to defend.
         Vector ball_vector = Vector::from_heading(self_data.ball_angle, DEFEND_OFFSET+DEFEND_Y);
         this->target_vec = Vector(goal_vec.i+ball_vector.i, goal_vec.j+ball_vector.j);

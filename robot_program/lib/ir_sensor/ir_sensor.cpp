@@ -1,6 +1,7 @@
 #include "ir_sensor.hpp"
 
 // Read data from IR sensor using UART
+// Same logic as camera, except serial port is changed
 bool IRSensor::read_serial(float* result, int num_floats) {
     const size_t total_bytes = num_floats * sizeof(float);
     const size_t max_buffer = 256;
@@ -48,7 +49,7 @@ void IRSensor::update() {
 // Calculates the true angle of ball relative to the field not the robot (heading in radians)
 void IRSensor::angle_correction(float heading) {
     if (this->read_success) this->angle = this->angle + heading;
-    while (this->angle >= M_PI) this->angle -= 2 * M_PI;
+    while (this->angle >= M_PI) this->angle -= 2 * M_PI; // normalising
     while (this->angle <= -M_PI) this->angle += 2 * M_PI;
 
 }

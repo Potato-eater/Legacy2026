@@ -1,6 +1,6 @@
 #include "otos.hpp"
 
-void OTOS::set_up() {
+void OTOS::set_up() { // set up the OTOS
     if (this->sparkfun_otos.begin()) { Serial.println("OTOS Initialized"); }
     else { 
         Serial.println("No OTOs detected");

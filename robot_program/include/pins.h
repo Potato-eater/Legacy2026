@@ -1,3 +1,6 @@
+// this file defines all the digital pins.
+
+// drive motors
 #define TL_PWM 33
 #define TL_DIR 34
 #define TR_PWM 29
@@ -7,8 +10,10 @@
 #define BR_PWM 2
 #define BR_DIR 3
 
+// run button
 #define BTN_RUN 5
 
+// debugging led
 #define DEBUG_LED 17
 
 #define BTN_1 6 // front button

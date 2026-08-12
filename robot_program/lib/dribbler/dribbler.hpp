@@ -7,16 +7,22 @@
 #include <Arduino.h>
 #include "pins.h"
 
+
+// controls the dribbler motor
 class DribblerMotor {
-    // motor spins a roller, roller spins the ball,
-    // Boom. Dribbler.
-    // these functions control the dribbler of the robot.
-    // im pretty sure the function names are easy to understand.
     public:
     int DIR_PIN, PWM_PIN;
+
+    // constructor
     DribblerMotor(int dir_pin, int pwm_pin);
+
+    // spin the dribbler
     void run(float speed=100);
+
+    // spin the dribbler in reverse
     void run_reverse(float speed=100);
+
+    // stop the dribbler
     void stop();
 };
 

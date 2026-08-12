@@ -27,18 +27,18 @@ class Mode {
     virtual OutputData update(BotData &self_data, BotData &other_data, float loop_time) = 0;
 };
 
-enum AimMode {
-    STRAIGHT_MODE,
-    OTOS_MODE,
-    CAMERA_MODE,
-    CAMERA_OTOS_MODE,
-    OTOS_REFLECTION_MODE,
+enum AimMode { // types of behaviour available for the attacking robot
+    STRAIGHT_MODE, // no goal tilting. Just kicking straight forwards
+    OTOS_MODE, // aim towards the goal using only the OTOS
+    CAMERA_MODE, // aim towards the goal using only the camera
+    CAMERA_OTOS_MODE, // aim towards the goal using both the camera and otos
+    OTOS_REFLECTION_MODE, // use otos to calculate a path to reflect the ball using the wall. NOT FINISHED.
 };
 
-class IndependentAttack : public Mode {
+class IndependentAttack : public Mode { // inherit from the Mode class
     public:
-    OutputData update(BotData &self_data, BotData &other_data, float loop_time);
-    IndependentAttack(enum AimMode aim_mode);
+    OutputData update(BotData &self_data, BotData &other_data, float loop_time); // make decision based on current sensor info 
+    IndependentAttack(enum AimMode aim_mode); // constructor
     private:
     enum AimMode aim_mode;
     float calculate_move_angle_straight(float heading, float ball_angle, float ball_magnitude);
@@ -49,19 +49,19 @@ class IndependentAttack : public Mode {
 };
 
 // defender mode
-class BetterDefend : public Mode {
+class BetterDefend : public Mode { // stays around the goal to defend.
     private:
     Vector target_posv;
     Vector target_vec;
     int status;
-    float find_move_angle(Vector goal_vector, float ball_angle, float ball_strength);
+    float find_move_angle(Vector goal_vector, float ball_angle, float ball_strength); // calculates path
 
     public:
     const int RETURNING = 0;
     const int DEFENDING = 1;
     BetterDefend();
     void reset();
-    OutputData update(BotData &self_data, BotData &other_data, float loop_time);
+    OutputData update(BotData &self_data, BotData &other_data, float loop_time); // make decision based on current sensor info 
 
     // outsiders can view status but can't modify it
     const int& get_status_code() const {
