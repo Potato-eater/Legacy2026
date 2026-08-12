@@ -60,7 +60,7 @@ Adafruit_SSD1306 display(128, 32, &Wire, -1);
 // Modes
 // using polymorphism, we can have different modes, that all returns the same datatype.
 
-IndependentAttack independent_attack(AimMode::CAMERA_MODE);
+IndependentAttack independent_attack(AimMode::CAMERA_OTOS_MODE);
 BetterDefend better_defend;
 // OneRobot one_robot_mode;
 // BetterDefend better_defend_mode;
@@ -195,7 +195,10 @@ void loop() {
   // }
   check_line(self_data.heading, self_data.line_vector, &pos_sys, &output.angle); // stops the robot from getting out of the line.
   
-  if (!robot_start || self_data.ball_strength == 0) {
+  // sfe_otos_pose2d_t pose;
+  // pos_sys.otos.sparkfun_otos.getPosition(pose);
+  // Serial.printf("x: %.2f, y: %.2f, h: %.2f \n", pose.x, pose.y, pose.h);
+  if (!robot_start) {
     // speed = 0;
     motor_ctrl.stop_motors();
   }
@@ -207,9 +210,8 @@ void loop() {
   // motor_ctrl.stop_motors();
 
   prev_robot_state = robot_start;
-  // dribbler.run(100);
-  digitalWriteFast(dribbler.DIR_PIN, 1);
-  digitalWriteFast(dribbler.PWM_PIN, 1);
+  dribbler.stop();
+
   digitalWrite(DEBUG_LED, HIGH);
 }
 
@@ -218,23 +220,23 @@ void loop() {
 
 bool set_robot_pos() {
   if (!digitalRead(BTN_1)) {
-    pos_sys.set_pos(Vector(0, -11.5), 0); // set position of otos (kick off)
+    pos_sys.set_pos(Vector(0, -14.5), 0); // set position of otos (kick off)
     return true;
   }
   if (!digitalRead(BTN_2)) {
-    pos_sys.set_pos(Vector(-41, -69.5), 0); // set position of otos
+    pos_sys.set_pos(Vector(-49, -61.5), 0); // set position of otos
     return true;
   }
   if (!digitalRead(BTN_3)) {
-    pos_sys.set_pos(Vector(0, -64.0), 0); // set position of otos (center front)
+    pos_sys.set_pos(Vector(0, -61.5), 0); // set position of otos (center front)
     return true;
   }
   if (!digitalRead(BTN_4)) {
-    pos_sys.set_pos(Vector(41, -69.5), 0); // set position of otos
+    pos_sys.set_pos(Vector(49, -61.5), 0); // set position of otos
     return true;
   }
   if (!digitalRead(BTN_5)) {
-    pos_sys.set_pos(Vector(0, -87.5), 0); // set position of otos (center back)
+    pos_sys.set_pos(Vector(0, -80), 0); // set position of otos (center back)
     return true;
   }
   return false;
