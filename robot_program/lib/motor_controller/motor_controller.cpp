@@ -26,7 +26,6 @@ std::array<float, 4> MotorController::scale_speeds(std::array<float, 4> speeds, 
     return scaled_speeds;
 }
 
-// calculates motor speeds given the final movement angle, speed and rotation of the robot
 std::array<float, 4> MotorController::get_motor_speeds(float movement_speed, float angle, float rotation) {
 
     // another piece of actual mathematical magic.

@@ -29,5 +29,5 @@ class MotorController {
     private:
     std::array<float, 4> scale_speeds(std::array<float, 4> speeds, float scale_to); // scale speed ratios into the desired speed
     std::array<float, 4> get_motor_speeds(float movement_speed, float angle, float rotation); // calculate what speed each motor should run at.
-
+};
 #endif // MOTOR CONTROLLER

@@ -18,8 +18,8 @@ class OTOS {
     float total_y = 0;
     float previous_y = 0;
     public:
-    void set_up();
-    void set_pos(float x, float y, float rotation);
+    void set_up(); // set up the sensor
+    void set_pos(float x, float y, float rotation); // set the position
     bool working  = true;
     /* return position vector of robot */
     Vector get_posv();

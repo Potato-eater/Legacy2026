@@ -198,19 +198,20 @@ void loop() {
   // sfe_otos_pose2d_t pose;
   // pos_sys.otos.sparkfun_otos.getPosition(pose);
   // Serial.printf("x: %.2f, y: %.2f, h: %.2f \n", pose.x, pose.y, pose.h);
-  if (!robot_start) {
-    // speed = 0;
-    motor_ctrl.stop_motors();
-  }
-  else {
+  // if (!robot_start) {
+  //   // speed = 0;
+  //   motor_ctrl.stop_motors();
+  // }
+  // else {
 
-    motor_ctrl.run_motors(output.speed, output.angle, output.rotation);
-  }
+  //   motor_ctrl.run_motors(output.speed, output.angle, output.rotation);
+  // }
   // Serial.printf("%.2f, %.2f\n", self_data.ball_angle * 180/M_PI, self_data.ball_strength);
   // motor_ctrl.stop_motors();
-
+  motor_ctrl.stop_motors();
+  dribbler.run(100);
   prev_robot_state = robot_start;
-  dribbler.stop();
+  // dribbler.stop();
 
   digitalWrite(DEBUG_LED, HIGH);
 }

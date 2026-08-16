@@ -21,5 +21,5 @@ class LineSensor {
     float get_distance();
     float get_angle();
     void send_bot_data(BotData self_data); // send data over to the other robot
-
+};
 #endif
