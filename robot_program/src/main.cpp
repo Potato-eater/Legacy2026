@@ -226,8 +226,15 @@ void loop() {
   }
   else {
 
-    motor_ctrl.run_motors(70.0, output.angle, output.rotation);
+    motor_ctrl.run_motors(output.speed, output.angle, output.rotation);
   }
+  if (output.dribbler_on == true) {
+    dribbler.run();
+  }
+  else {
+    dribbler.stop();
+  }
+
 
   // Vector g_vec = opp_goal_pos_vector.relative_to(self_data.pos_vector);
   // Serial.printf("%.2f\n", g_vec.heading() * 180.0 / M_PI);
@@ -246,7 +253,7 @@ void loop() {
 
 
   prev_robot_state = robot_start;
-  dribbler.stop();
+  // dribbler.stop();
 
   digitalWrite(DEBUG_LED, HIGH);
 }
@@ -260,7 +267,7 @@ bool set_robot_pos() {
     return true;
   }
   if (!digitalRead(BTN_2)) {
-    pos_sys.set_pos(Vector(-49, -61.5), 0); // set position of otos
+    pos_sys.set_pos(Vector(-49, -61.5), 0); // set position of otos (def left)
     return true;
   }
   if (!digitalRead(BTN_3)) {
@@ -268,7 +275,7 @@ bool set_robot_pos() {
     return true;
   }
   if (!digitalRead(BTN_4)) {
-    pos_sys.set_pos(Vector(49, -61.5), 0); // set position of otos
+    pos_sys.set_pos(Vector(49, -61.5), 0); // set position of otos (def right)
     return true;
   }
   if (!digitalRead(BTN_5)) {
