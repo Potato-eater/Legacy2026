@@ -3,9 +3,9 @@
 PID linear_pid;
 Vector find_closest_neutral_point(Vector pos) { // find the closest neutral point.
     std::vector<Vector> neutral_points = {
-        Vector(0, -25.0),
-        Vector(35, -25.0),
-        Vector(-35, -25.0), 
+        Vector(0, -30.0),
+        Vector(35, -30.0),
+        Vector(-35, -30.0), 
     };
     Vector closest_point = neutral_points[0];
     float closest_dist = (pos.relative_to(closest_point)).magnitude();
@@ -75,7 +75,7 @@ float IndependentAttack::calculate_move_angle_camera(float heading, float ball_a
     }
 }
 
-float IndependentAttack::calculate_move_angle_otos(float heading, float ball_angle, float ball_magnitude, Vector goal_vec) {
+float IndependentAttack::calculate_move_angle_otos(float heading, float ball_angle, float ball_magnitude, Vector goal_vec) { // calculating tilt_to_goal using only otos
     while (ball_angle >= PI) ball_angle -= 2 * PI;
     while (ball_angle <= -PI) ball_angle += 2 * PI;
     float angle_diff = PI / 2 - goal_vec.heading();
@@ -116,6 +116,12 @@ OutputData IndependentAttack::update(BotData &self_data, BotData &other_data, fl
     float heading = self_data.heading;
     while (heading > M_PI) heading -= 2 * M_PI;
     while (heading < -M_PI) heading += 2 * M_PI;
+    if (0 < self_data.ball_angle < (M_PI)){
+        dribbler_on = true;   
+    }
+    else {
+        dribbler_on = false;
+    }
 
     switch (this->aim_mode) { // decide what to do based on current mode.
         case STRAIGHT_MODE: {
@@ -154,15 +160,15 @@ OutputData IndependentAttack::update(BotData &self_data, BotData &other_data, fl
             break;
         }
 
-        case CAMERA_OTOS_MODE: {
+        case CAMERA_OTOS_MODE: { // base mode in which both camera and otos are used to track goal
 	        const Vector goal_left(-22.5, 91.5);
 	        const Vector goal_right(22.5, 91.5);
 
-	        float heading_to_left = goal_left.relative_to(self_data.pos_vector).heading() - (M_PI / 18);
-	        float heading_to_right = goal_right.relative_to(self_data.pos_vector).heading() + (M_PI / 18);
+	        float heading_to_left = goal_left.relative_to(self_data.pos_vector).heading() - (M_PI / 18); 
+	        float heading_to_right = goal_right.relative_to(self_data.pos_vector).heading() + (M_PI / 18); // calculating heading to both left and right sides
 	        int pixel_diff = self_data.goal_x - 80;
             rotation = pixel_diff * -(M_PI / 160.0); 
-            float relative_camera_angle = rotation + self_data.heading;
+            float relative_camera_angle = rotation + self_data.heading; // camera angle relative to field
 	
 	        if (self_data.goal_x == -1) {
                 pixel_diff = 0;
@@ -190,16 +196,14 @@ break;
         Vector mv_vec = find_closest_neutral_point(self_data.pos_vector);
         mv_angle = mv_vec.relative_to(self_data.pos_vector).heading();
         rotation = -heading;
-        speed = 80;
+        speed = 100;
         dribbler_on = false;
         
     }
     while (rotation > M_PI) rotation -= 2*M_PI;
     while (rotation < -M_PI) rotation += 2*M_PI;
 
-    bool dribbler_on = false; // will do this later.
-
-    return OutputData {.angle = mv_angle, .speed = speed, .rotation = rotation, .dribbler_on = dribbler_on};
+    return OutputData {.angle = mv_angle, .speed = speed, .rotation = rotation, .dribbler_on = true};
 }
 
 BetterDefend::BetterDefend() {

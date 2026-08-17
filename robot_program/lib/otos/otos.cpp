@@ -10,7 +10,7 @@ void OTOS::set_up() { // set up the OTOS
     this->sparkfun_otos.setLinearUnit(sfe_otos_linear_unit_t(0));
     this->sparkfun_otos.setAngularScalar(0.9936516699);
     this->sparkfun_otos.setLinearScalar(1.127);
-    // this->sparkfun_otos.setLinearScalar(0.872);
+    //this->sparkfun_otos.setLinearScalar(0.872);
     this->sparkfun_otos.resetTracking();
 }
 
