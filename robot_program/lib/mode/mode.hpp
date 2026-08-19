@@ -21,6 +21,7 @@ class Mode {
     float speed;
     float rotation;
     bool dribbler_on;
+    bool RELEASING_BALL;
 
     public:
     float get_rotation(float target_angle, float heading);

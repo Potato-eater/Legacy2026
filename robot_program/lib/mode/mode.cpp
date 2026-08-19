@@ -116,7 +116,7 @@ OutputData IndependentAttack::update(BotData &self_data, BotData &other_data, fl
     float heading = self_data.heading;
     while (heading > M_PI) heading -= 2 * M_PI;
     while (heading < -M_PI) heading += 2 * M_PI;
-    if (0 < self_data.ball_angle && self_data.ball_angle < (M_PI)){
+    if ((M_PI / 4)< self_data.ball_angle && self_data.ball_angle < ((3 * M_PI) / 4)){
         dribbler_on = true;   
     }
     else {

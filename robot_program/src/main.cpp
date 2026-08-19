@@ -181,8 +181,14 @@ void loop() {
   line_sensor.send_bot_data(self_data); // send data to the other robot via the line sensor.
   BotData other_data = line_sensor.other_data;
 
+  
+
   // OutputData output = independent_attack.update(self_data, other_data, 0.0);
+
   OutputData output = independent_attack.update(self_data, other_data, 0.0);
+  if (other_data.ball_strength > self_data.ball_strength) {
+    output = better_defend.update(self_data, other_data, 0.0);
+  }
   // if (self_data.ball_strength > other_data.ball_strength) {
   //   output = independent_attack.update(self_data, other_data, 0.0);
   // }
@@ -201,13 +207,18 @@ void loop() {
     motor_ctrl.stop_motors();
   }
   else {
-
-    motor_ctrl.run_motors(output.speed, output.angle, output.rotation);
+    motor_ctrl.run_motors(output.speed, output.angle, output.rotation); 
   }
 
+  
   // Serial.printf("dribbler on: %d\n", output.dribbler_on);
-  if (output.dribbler_on == true) {
+
+  if (output.dribbler_on && !(RELEASE_BALL && self_data.pos_vector.j >= SLOW_DOWN_DIST-5) && robot_start) {
+    dribbler.run_reverse();
+  }
+  else if (output.dribbler_on && self_data.pos_vector.j >= SLOW_DOWN_DIST-5 && RELEASE_BALL && robot_start) {
     dribbler.run();
+    output.speed = RELEASE_SPEED;
   }
   else {
     dribbler.stop();
@@ -217,6 +228,7 @@ void loop() {
   // dribbler.stop();
 
   digitalWrite(DEBUG_LED, HIGH);
+  Serial.println(self_data.ball_strength);
 }
 
 bool set_robot_pos() {
