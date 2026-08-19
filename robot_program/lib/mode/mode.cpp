@@ -203,7 +203,7 @@ break;
     while (rotation > M_PI) rotation -= 2*M_PI;
     while (rotation < -M_PI) rotation += 2*M_PI;
 
-    return OutputData {.angle = mv_angle, .speed = speed, .rotation = rotation, .dribbler_on = true};
+    return OutputData {.angle = mv_angle, .speed = speed, .rotation = rotation, .dribbler_on = dribbler_on};
 }
 
 BetterDefend::BetterDefend() {

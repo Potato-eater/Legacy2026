@@ -195,9 +195,7 @@ void loop() {
   // }
   check_line(self_data.heading, self_data.line_vector, &pos_sys, &output.angle); // stops the robot from getting out of the line.
   
-  // sfe_otos_pose2d_t pose;
-  // pos_sys.otos.sparkfun_otos.getPosition(pose);
-  // Serial.printf("x: %.2f, y: %.2f, h: %.2f \n", pose.x, pose.y, pose.h);
+
   if (!robot_start) {
     // speed = 0;
     motor_ctrl.stop_motors();
@@ -206,6 +204,8 @@ void loop() {
 
     motor_ctrl.run_motors(output.speed, output.angle, output.rotation);
   }
+
+  // Serial.printf("dribbler on: %d\n", output.dribbler_on);
   if (output.dribbler_on == true) {
     dribbler.run();
   }
@@ -213,31 +213,11 @@ void loop() {
     dribbler.stop();
   }
 
-
-  // Vector g_vec = opp_goal_pos_vector.relative_to(self_data.pos_vector);
-  // Serial.printf("%.2f\n", g_vec.heading() * 180.0 / M_PI);
-  // Serial.printf("%d\n", line_sensor.other_data_received);
-
-  // CompVec result_v = calc_ball_vector(CompVec(1,0), CompVec(0, 1), PolVec(1, M_PI_4), PolVec(1, M_PI/6));
-
-  // Serial.printf("%.2f, %.2f\n", result_v.get_i(), result_v.get_j());
-
-
-
-
-
-
-
-
-
   prev_robot_state = robot_start;
   // dribbler.stop();
 
   digitalWrite(DEBUG_LED, HIGH);
 }
-
-
-
 
 bool set_robot_pos() {
   if (!digitalRead(BTN_1)) {
