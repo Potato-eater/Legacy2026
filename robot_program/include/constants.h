@@ -29,7 +29,7 @@ const int BALL_STRENGTH_LIMIT = 25; // the number lower than this means the ball
 
 // Limits
 const float MAX_SPEED = 100;
-const float RELEASE_SPEED = 100; // how fast to go when releasing
+const float RELEASE_SPEED = 50; // how fast to go when releasing
 const float ball_triangulation_angle_limit = 1*M_PI/18; // 10 degrees
 
 // BETTER DEFEND

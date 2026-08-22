@@ -208,7 +208,16 @@ void loop() {
   // }
   check_line(self_data.heading, self_data.line_vector, &pos_sys, &output.angle); // stops the robot from getting out of the line.
   
-
+  if (output.dribbler_on && !(RELEASE_BALL && self_data.pos_vector.j >= SLOW_DOWN_DIST-5) && robot_start) {
+    dribbler.run();
+  }
+  else if (output.dribbler_on && self_data.pos_vector.j >= SLOW_DOWN_DIST-5 && RELEASE_BALL && robot_start) {
+    dribbler.run_reverse();
+    output.speed = RELEASE_SPEED;
+  }
+  else {
+    dribbler.stop();
+  }
   if (!robot_start) {
     // speed = 0;
     motor_ctrl.stop_motors();
@@ -221,16 +230,7 @@ void loop() {
   // Serial.printf("dribbler on: %d\n", output.dribbler_on);
   Serial.printf("%.2f, %.2f", self_data.pos_vector.i, self_data.pos_vector.j);
 
-  if (output.dribbler_on && !(RELEASE_BALL && self_data.pos_vector.j >= SLOW_DOWN_DIST-5) && robot_start) {
-    dribbler.run_reverse();
-  }
-  else if (output.dribbler_on && self_data.pos_vector.j >= SLOW_DOWN_DIST-5 && RELEASE_BALL && robot_start) {
-    dribbler.run();
-    output.speed = RELEASE_SPEED;
-  }
-  else {
-    dribbler.stop();
-  }
+
 
   prev_robot_state = robot_start;
   // dribbler.stop();
