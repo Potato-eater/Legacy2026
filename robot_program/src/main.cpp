@@ -73,7 +73,7 @@ int loop_time = 0;
 float time_start = millis();
 float time_end = millis();
 
-
+int num_greater_than_other = 0;
 
 void setup() {
   // put your setup code here, to run once:
@@ -186,9 +186,17 @@ void loop() {
   // OutputData output = independent_attack.update(self_data, other_data, 0.0);
 
   OutputData output = independent_attack.update(self_data, other_data, 0.0);
-  if (other_data.ball_strength > self_data.ball_strength) {
-    output = better_defend.update(self_data, other_data, 0.0);
+  if (self_data.ball_strength > other_data.ball_strength) {
+    num_greater_than_other++;
   }
+  else {
+    num_greater_than_other = 0;
+  }
+  if (num_greater_than_other > 20) {
+    output = independent_attack.update(self_data, other_data, 0.0);
+  }
+  
+  output = better_defend.update(self_data, other_data, 0.0);
   // if (self_data.ball_strength > other_data.ball_strength) {
   //   output = independent_attack.update(self_data, other_data, 0.0);
   // }
