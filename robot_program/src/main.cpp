@@ -185,7 +185,7 @@ void loop() {
 
   // OutputData output = independent_attack.update(self_data, other_data, 0.0);
 
-  OutputData output = independent_attack.update(self_data, other_data, 0.0);
+  OutputData output = better_defend.update(self_data, other_data, 0.0);
   if (self_data.ball_strength > other_data.ball_strength) {
     num_greater_than_other++;
   }
@@ -196,7 +196,6 @@ void loop() {
     output = independent_attack.update(self_data, other_data, 0.0);
   }
   
-  output = better_defend.update(self_data, other_data, 0.0);
   // if (self_data.ball_strength > other_data.ball_strength) {
   //   output = independent_attack.update(self_data, other_data, 0.0);
   // }
