@@ -219,6 +219,7 @@ void loop() {
 
   
   // Serial.printf("dribbler on: %d\n", output.dribbler_on);
+  Serial.printf("%.2f, %.2f", self_data.pos_vector.i, self_data.pos_vector.j);
 
   if (output.dribbler_on && !(RELEASE_BALL && self_data.pos_vector.j >= SLOW_DOWN_DIST-5) && robot_start) {
     dribbler.run_reverse();
