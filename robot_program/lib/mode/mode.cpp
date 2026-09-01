@@ -230,11 +230,8 @@ OutputData BetterDefend::update(BotData &self_data, BotData &other_data, float l
     // if defending go on the semi-circle
     if (this->status == this->DEFENDING) {
         // limit rotation
-        if (self_data.ball_angle > 3*PI/2) {
+        if (self_data.ball_angle < 0) {
             this->rotation = this->get_rotation(0, self_data.heading);
-        }
-        else if (self_data.ball_angle > PI) {
-            this->rotation = this->get_rotation(PI, self_data.heading);
         }
         else {
             this->rotation = this->get_rotation(self_data.ball_angle, self_data.heading);
@@ -243,14 +240,14 @@ OutputData BetterDefend::update(BotData &self_data, BotData &other_data, float l
         // ACTUAL mathematical magic happening here. if it works, dont touch it.
         // the robot goes in a semi circle around the goal to defend.
         Vector ball_vector = Vector::from_heading(self_data.ball_angle, DEFEND_OFFSET+DEFEND_Y);
-        this->target_vec = Vector(goal_vec.i+ball_vector.i, goal_vec.j+ball_vector.j);
+        this->target_vec = Vector(goal_vec.i + ball_vector.i, goal_vec.j + ball_vector.j);
         
         this->angle = target_vec.heading();
     }
     // if returning go back to goal while avoiding the ball
     else if (this->status == this->RETURNING) {
         this->rotation = this->get_rotation(PI/2, self_data.heading);
-        this->target_vec = Vector(goal_vec.i, goal_vec.j+15);
+        this->target_vec = Vector(goal_vec.i, goal_vec.j + 15);
         this->angle = target_vec.heading();
 
         // difference in angle between ball angle and goal target vector
