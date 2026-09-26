@@ -164,11 +164,11 @@ OutputData IndependentAttack::update(BotData &self_data, BotData &other_data, fl
 	        const Vector goal_left(-22.5, 91.5);
 	        const Vector goal_right(22.5, 91.5);
 
-	        float heading_to_left = goal_left.relative_to(self_data.pos_vector).heading() - (M_PI / 4); 
-	        float heading_to_right = goal_right.relative_to(self_data.pos_vector).heading() + (M_PI / 4); // calculating heading to both left and right sides
+	        float heading_to_left = goal_left.relative_to(self_data.pos_vector).heading() + (M_PI / 4); 
+	        float heading_to_right = goal_right.relative_to(self_data.pos_vector).heading() - (M_PI / 4); // calculating heading to both left and right sides
 	        int pixel_diff = self_data.goal_x - 80;
             rotation = pixel_diff * -(M_PI / 160.0); 
-            float relative_camera_angle = rotation + self_data.heading; // camera angle relative to field
+            float relative_camera_angle = rotation + self_data.heading + M_PI_2; // camera angle relative to field
 	
 	        if (self_data.goal_x == -1) {
                 pixel_diff = 0;
@@ -178,6 +178,7 @@ OutputData IndependentAttack::update(BotData &self_data, BotData &other_data, fl
                 break;
             }    
             else if (heading_to_left >= relative_camera_angle && relative_camera_angle >= heading_to_right) {
+                rotation = pixel_diff * -(M_PI / 160.0); 
                 mv_angle = this->calculate_move_angle_camera(heading, self_data.ball_angle, self_data.ball_strength); 
                 break;
 	        }
