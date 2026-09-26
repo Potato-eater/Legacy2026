@@ -182,8 +182,8 @@ void loop() {
   BotData other_data = line_sensor.other_data;
 
   
-
-  // OutputData output = independent_attack .update(self_data, other_data, 0.0);
+  bool is_attack = false;
+  //OutputData output = independent_attack .update(self_data, other_data, 0.0);
 
   OutputData output = better_defend.update(self_data, other_data, 0.0);
   if (self_data.ball_strength > other_data.ball_strength) {
@@ -192,20 +192,14 @@ void loop() {
   else {
     num_greater_than_other = 0;
   }
-  if (num_greater_than_other >= 10) {
+  if (num_greater_than_other >= 4) {
+    output = independent_attack.update(self_data, other_data, 0.0);
+    is_attack = true;
+  }
+  if(self_data.ball_strength == 0 && is_attack) {
     output = independent_attack.update(self_data, other_data, 0.0);
   }
-  output = better_defend.update(self_data, other_data, 0.0);
-  // if (self_data.ball_strength > other_data.ball_strength) {
-  //   output = independent_attack.update(self_data, other_data, 0.0);
-  // }
-  // else {
-  //   output = better_defend.update(self_data, other_data, 0.0);
-  // }
-
-  // if (self_data.line_vector.magnitude() != 0) {
-  //   output.angle = self_data.line_vector.heading() + M_PI;
-  // }
+  
   check_line(self_data.heading, self_data.line_vector, &pos_sys, &output.angle); // stops the robot from getting out of the line.
   
 
