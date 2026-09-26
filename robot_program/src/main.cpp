@@ -135,6 +135,7 @@ void setup() {
 
   Serial.println("Awaiting button press");
 
+  camera.facing_yellow = false;
   better_defend.reset();
 }
 

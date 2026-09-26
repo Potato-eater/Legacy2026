@@ -43,7 +43,6 @@ void Camera::update() {
     int data[4];
     this->read_success = this->read_serial(data, 2);
     if (this->read_success) {
-        this->goal_x = data[0]; // assign each byte to their correct locations.
-        this->goal_y = data[1];
+        this->goal_x = data[1];
     }
 }

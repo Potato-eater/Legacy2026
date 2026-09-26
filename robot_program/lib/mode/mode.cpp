@@ -86,20 +86,20 @@ float IndependentAttack::calculate_move_angle_otos(float heading, float ball_ang
     
     float low_bound = goal_vec.heading() - FORWARD_TOLERANCE;
     float high_bound = goal_vec.heading() + FORWARD_TOLERANCE;
-    Serial.printf("low %.2f, high %.2f", low_bound * 180/M_PI, high_bound * 180/M_PI);
+    // Serial.printf("low %.2f, high %.2f", low_bound * 180/M_PI, high_bound * 180/M_PI);
     if (ball_angle > low_bound && ball_angle < high_bound) {
         // Vector aim_vec = goal_vec;
-        Serial.println("forward");
+        // Serial.println("forward");
         // return aim_vec.heading(); // move forward
         return ball_angle;
     }
     else if ((ball_angle > high_bound) || (ball_angle < -M_PI_2 + angle_diff)) {
-        Serial.println("Turning right");
+        // Serial.println("Turning right");
 
         return ball_angle + PI / 18 * 8; // turn right
     }
     else if ((ball_angle < low_bound)) {
-        Serial.println("Turning left");
+        // Serial.println("Turning left");
         return ball_angle - PI / 18 * 8; // turn left
     }
 

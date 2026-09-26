@@ -14,7 +14,7 @@ class Camera {
     public:
     int goal_x = -1;
     int goal_y = -1;
-
+    bool facing_yellow = true;
     bool read_success = false;
 
     // reading data from the camera
