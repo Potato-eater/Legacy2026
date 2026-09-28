@@ -43,12 +43,22 @@ float IndependentAttack::calculate_move_angle_straight(float heading, float ball
         return M_PI_2 + heading;
     }
     else if ((ball_angle > lim_up) || (ball_angle < -M_PI_2)) {
+        if (ball_magnitude >= 45 && ball_magnitude <= 52.5) {
+            return ball_angle + M_PI / 18 * 4; // turn right
+        }
+        else {
+            return ball_angle + M_PI / 18 * 6; // turn harder right
+        }
         // Serial.println("Turning right");
-        return ball_angle + M_PI / 18 * 6; // turn right
     }
     else if ((ball_angle < lim_down)) {
+        if (ball_magnitude >= 45 && ball_magnitude <= 52.5) {
+            return ball_angle - M_PI / 18 * 4; // turn left
+        }
+        else {
+            return ball_angle - M_PI / 18 * 6; // turning harder left
+        }
         // Serial.println("Turning left");
-        return ball_angle - M_PI / 18 * 6; // turn left
     }
 }
 
@@ -66,12 +76,22 @@ float IndependentAttack::calculate_move_angle_camera(float heading, float ball_a
         return M_PI_2 + heading;
     }
     else if ((ball_angle > lim_up) || (ball_angle < -M_PI_2)) {
+        if (ball_magnitude >= 45 && ball_magnitude <= 52.5) {
+            return ball_angle + M_PI / 18 * 4.5; // turn right
+        }
+        else {
+            return ball_angle + M_PI / 18 * 6.75; // turn harder right
+        }
         // Serial.println("Turning right");
-        return ball_angle + M_PI / 18.0 * 7.5; // turn right
     }
     else if ((ball_angle < lim_down)) {
+        if (ball_magnitude >= 45 && ball_magnitude <= 52.5) {
+            return ball_angle - M_PI / 18 * 4.5; // turn left
+        }
+        else {
+            return ball_angle - M_PI / 18 * 6.75; // turning harder left
+        }
         // Serial.println("Turning left");
-        return ball_angle - M_PI / 18.0 * 7.5; // turn left
     }
 }
 
@@ -93,14 +113,23 @@ float IndependentAttack::calculate_move_angle_otos(float heading, float ball_ang
         // return aim_vec.heading(); // move forward
         return ball_angle;
     }
-    else if ((ball_angle > high_bound) || (ball_angle < -M_PI_2 + angle_diff)) {
+    else if ((ball_angle > high_bound) || (ball_angle < -M_PI_2)) {
+        if (ball_magnitude >= 45 && ball_magnitude <= 52.5) {
+            return ball_angle + M_PI / 18 * 4.5; // turn right
+        }
+        else {
+            return ball_angle + M_PI / 18 * 7.5; // turn harder right
+        }
         // Serial.println("Turning right");
-
-        return ball_angle + PI / 18 * 8; // turn right
     }
     else if ((ball_angle < low_bound)) {
+        if (ball_magnitude >= 45 && ball_magnitude <= 52.5) {
+            return ball_angle - M_PI / 18 * 4.5; // turn left
+        }
+        else {
+            return ball_angle - M_PI / 18 * 7.5; // turning harder left
+        }
         // Serial.println("Turning left");
-        return ball_angle - PI / 18 * 8; // turn left
     }
 
 

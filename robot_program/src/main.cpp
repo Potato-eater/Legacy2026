@@ -61,7 +61,7 @@ Adafruit_SSD1306 display(128, 32, &Wire, -1);
 // Modes
 // using polymorphism, we can have different modes, that all returns the same datatype.
 
-IndependentAttack independent_attack(AimMode::CAMERA_MODE);
+IndependentAttack independent_attack(AimMode::CAMERA_OTOS_MODE);
 BetterDefend better_defend;
 // OneRobot one_robot_mode;
 // BetterDefend better_defend_mode;
