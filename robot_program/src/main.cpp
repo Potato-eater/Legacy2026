@@ -28,6 +28,7 @@
 // pre-defining some functions.
 bool set_robot_pos();
 void print_botdata(BotData &bot_data, String message);
+void set_goal_colour(bool *is_yellow);
 
 // checks if the robot is on the line
 void check_line(float heading, Vector line_vector, PositionSystem *pos_sys, float *move_angle) {
@@ -60,7 +61,7 @@ Adafruit_SSD1306 display(128, 32, &Wire, -1);
 // Modes
 // using polymorphism, we can have different modes, that all returns the same datatype.
 
-IndependentAttack independent_attack(AimMode::CAMERA_OTOS_MODE);
+IndependentAttack independent_attack(AimMode::CAMERA_MODE);
 BetterDefend better_defend;
 // OneRobot one_robot_mode;
 // BetterDefend better_defend_mode;
@@ -88,6 +89,7 @@ void setup() {
 
   // initialising GPIO
   pinMode(DEBUG_LED, OUTPUT);
+  pinMode(TEENSY_LED, OUTPUT);
 
   // Drive motors
   pinMode(TL_PWM, OUTPUT); pinMode(TR_PWM, OUTPUT); pinMode(BL_PWM, OUTPUT); pinMode(BR_PWM, OUTPUT);
@@ -135,7 +137,7 @@ void setup() {
 
   Serial.println("Awaiting button press");
 
-  camera.facing_yellow = false;
+  camera.facing_yellow = true;
   better_defend.reset();
 }
 
@@ -143,6 +145,7 @@ void setup() {
 void loop() {
   // Serial.println("hello world");
   set_robot_pos();
+  set_goal_colour(&camera.facing_yellow);
   robot_start = !digitalReadFast(BTN_RUN);
   if (robot_start && prev_robot_state == false) {  
     heading_offset = pos_sys.get_heading();
@@ -230,7 +233,17 @@ void loop() {
   // dribbler.stop();
 
   digitalWrite(DEBUG_LED, HIGH);
+  digitalWrite(TEENSY_LED, camera.facing_yellow);
   Serial.println(self_data.ball_strength);
+}
+
+void set_goal_colour(bool *is_yellow) {
+  if (!digitalRead(BTN_1) && !digitalRead(BTN_5)) {
+    *is_yellow = false;
+  }
+  if (!digitalRead(BTN_2) && !digitalRead(BTN_4)) {
+    *is_yellow = true;
+  }
 }
 
 bool set_robot_pos() {

@@ -25,7 +25,7 @@ const float FORWARD_TOLERANCE = M_PI/12;
 const float DEFEND_DIST = 30; // not used by better defend
 const int SLOW_DOWN_DIST = 40; // where the robot should release the ball
 
-const int BALL_STRENGTH_LIMIT = 25; // the number lower than this means the ball is far away
+const int BALL_STRENGTH_LIMIT = 30; // the number lower than this means the ball is far away
 
 // Limits
 const float MAX_SPEED = 100;

@@ -15,6 +15,7 @@
 
 // debugging led
 #define DEBUG_LED 17
+#define TEENSY_LED 13
 
 #define BTN_1 6 // front button
 #define BTN_2 12 // left button

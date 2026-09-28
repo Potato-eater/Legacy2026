@@ -1,0 +1,124 @@
+(footprint "Altronics_S5037"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "BT$"
+		(at 0 -0.5 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "ab6eae67-d076-4e7a-a6eb-0203a404a8b3")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.1)
+			)
+		)
+	)
+	(property "Value" "Altronics_S5037"
+		(at 0 1 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "e49caa82-53d8-49b5-b73d-085aba50d673")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "abd4d8ed-c456-40e2-a086-eeecd6806383")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "a12b9ccd-7da9-48d5-b725-a9a975ea4764")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_rect
+		(start -37.5 -10.5)
+		(end 37.5 10.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "6ee6c7a7-db6f-45b3-b9b8-c5121ffd37fa")
+	)
+	(fp_text user "-"
+		(at 37 2.5 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "9181f88b-b0ed-41aa-9121-e9e23bfdb480")
+		(effects
+			(font
+				(size 5 5)
+				(thickness 0.625)
+			)
+			(justify left bottom)
+		)
+	)
+	(fp_text user "+"
+		(at -43.5 2.5 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "ef617df7-2fe5-4797-8637-c52fe572c72f")
+		(effects
+			(font
+				(size 5 5)
+				(thickness 0.625)
+			)
+			(justify left bottom)
+		)
+	)
+	(fp_text user "18650 battery holder"
+		(at 0 2.5 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "08aebf18-98df-4d31-a4f0-4cf46a19fcab")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole roundrect
+		(at -35.7 0)
+		(size 3 3)
+		(drill 1.8)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(roundrect_rratio 0.08)
+		(uuid "12270114-6fdd-4497-a06d-d410d19f9142")
+	)
+	(pad "2" thru_hole circle
+		(at 35.7 0)
+		(size 3 3)
+		(drill 1.8)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "b8ffb3ec-8a3b-44cf-a126-7d0c4e1d25b4")
+	)
+	(embedded_fonts no)
+)

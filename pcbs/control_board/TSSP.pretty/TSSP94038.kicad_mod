@@ -1,0 +1,187 @@
+(footprint "TSSP94038"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "LED13"
+		(at -4 -1 90)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "18c48a1d-6712-43cc-920e-07a1888c0ddb")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.1)
+			)
+		)
+	)
+	(property "Value" "TSSP94038"
+		(at 0 1 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "5e17fa44-98c1-4e58-b21d-f863875ae0d3")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" "TSSP94038"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "e6a96db1-5192-4cf1-b126-65793d7227fa")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "ddb067c8-3120-46d2-b155-70877301b593")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_rect
+		(start -3 -2.35)
+		(end 3 1.55)
+		(stroke
+			(width 0.2)
+			(type default)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "290a9bb4-4e98-431f-aa8c-aa9a2d288888")
+	)
+	(fp_arc
+		(start -2.369 -2.35)
+		(mid 0 -4.050733)
+		(end 2.369 -2.35)
+		(stroke
+			(width 0.2)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "b13aab0c-417b-4c3d-ba19-80e85491c37d")
+	)
+	(fp_line
+		(start -3.2 -4.35)
+		(end -3.2 1.95)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "bb6cdbc8-51d7-4cf5-acca-64d873ca5f9c")
+	)
+	(fp_line
+		(start -3.2 1.95)
+		(end 3.2 1.95)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "400a8047-96c7-445b-9b95-66336d630929")
+	)
+	(fp_line
+		(start 3.2 -4.35)
+		(end -3.2 -4.35)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "5e3ae4bd-cd3d-40b1-8b06-cdaa2daf58cb")
+	)
+	(fp_line
+		(start 3.2 1.95)
+		(end 3.2 -4.35)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "11a57d1f-f523-425a-8b38-5a7d80176ac8")
+	)
+	(fp_line
+		(start -2.5019 -4.09)
+		(end -2.5019 -4.09)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "a82b82b8-40c5-45ff-98b3-68fb7fa4fd50")
+	)
+	(fp_line
+		(start 2.5019 -4.09)
+		(end 2.5019 -4.09)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "43533632-adb2-416c-acb3-c5d863d0e38c")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 2.5 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "1b77d003-4b55-4f01-af9a-568e99b2bd25")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole circle
+		(at 2.54 0)
+		(size 1.5 1.5)
+		(drill 0.7112)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "7e9d88b2-2f54-499c-9de0-4765d3747d9b")
+	)
+	(pad "2" thru_hole circle
+		(at 0 0)
+		(size 1.5 1.5)
+		(drill 0.7112)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "65e507bb-2dc8-4bca-b6f7-15eb3a76eb56")
+	)
+	(pad "3" thru_hole circle
+		(at -2.54 0)
+		(size 1.5 1.5)
+		(drill 0.7112)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "d8c3eb71-9b9b-4f76-987c-b41f9ba1cbc8")
+	)
+	(embedded_fonts no)
+	(model "C:/Users/yuets/OneDrive/Desktop/kicad/additional_3d/TSSP94038.stp"
+		(offset
+			(xyz 0 -1.5 7.6)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 -0 -180)
+		)
+	)
+)

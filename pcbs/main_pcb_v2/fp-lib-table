@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "Altronics")(type "KiCad")(uri "${KIPRJMOD}/control_board/Altronics.pretty")(options "")(descr ""))
+)
