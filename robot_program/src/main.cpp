@@ -115,7 +115,7 @@ void setup() {
   pinMode(DR_DIR, OUTPUT);
 
   pos_sys.setup(); // initialise the bno055 gyro and sparkfun OTOS
-
+  pos_sys.set_pos(Vector(0, -80), 0);
   // we dont actually use the display all the time. If it is installed, it would display info.
   // After extensive testing, we found that we cannot really put live data onto this screen,
   // It updates a bit too slow, the other functions cannot run until its done.
@@ -202,6 +202,21 @@ void loop() {
   }
   if(self_data.ball_strength == 0 && is_attack) {
     output = independent_attack.update(self_data, other_data, 0.0);
+  }
+
+
+  if (self_data.ball_strength == 0 && other_data.ball_strength == 0) {
+    float own_dist_to_goal = self_data.pos_vector.relative_to(own_goal_pos_vector).magnitude();
+    float other_dist_to_goal = other_data.pos_vector.relative_to(own_goal_pos_vector).magnitude();
+    Serial.printf("own dist: %.2f other dist: %.2f \n", own_dist_to_goal, other_dist_to_goal);
+    if (own_dist_to_goal > other_dist_to_goal) {
+      output = independent_attack.update(self_data, other_data, 0.0);
+      Serial.printf("no ball. neutral pos\n");
+    }
+    else {
+      output = better_defend.update(self_data, other_data, 0.0);
+      Serial.printf("no ball. defend pos\n");
+    }
   }
   
   check_line(self_data.heading, self_data.line_vector, &pos_sys, &output.angle); // stops the robot from getting out of the line.
