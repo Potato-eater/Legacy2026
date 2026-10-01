@@ -196,12 +196,9 @@ void loop() {
   else {
     num_greater_than_other = 0;
   }
-  if (num_greater_than_other >= 4) {
+  if (num_greater_than_other >= 2) {
     output = independent_attack.update(self_data, other_data, 0.0);
     is_attack = true;
-  }
-  if(self_data.ball_strength == 0 && is_attack) {
-    output = independent_attack.update(self_data, other_data, 0.0);
   }
 
 
