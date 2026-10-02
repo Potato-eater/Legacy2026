@@ -248,7 +248,7 @@ void BetterDefend::reset() {
 
 OutputData BetterDefend::update(BotData &self_data, BotData &other_data, float loop_time) {
     // if in goal square and sees the ball, start defending
-    if (self_data.pos_vector.i > -GOAL_WIDTH/2 && self_data.pos_vector.i < GOAL_WIDTH/2 && self_data.pos_vector.j <= -65 && self_data.ball_strength != 0) {
+    if (self_data.pos_vector.i > -GOAL_WIDTH/2 && self_data.pos_vector.i < GOAL_WIDTH/2 && self_data.pos_vector.j <= -70 && self_data.ball_strength != 0) {
         this->status = this->DEFENDING;
     }
     else {
@@ -283,7 +283,7 @@ OutputData BetterDefend::update(BotData &self_data, BotData &other_data, float l
     // if returning go back to goal while avoiding the ball
     else if (this->status == this->RETURNING) {
         this->rotation = this->get_rotation(PI/2, self_data.heading);
-        this->target_vec = Vector(goal_vec.i, goal_vec.j + 15);
+        this->target_vec = Vector(goal_vec.i, goal_vec.j + 10);
         this->angle = target_vec.heading();
 
         // difference in angle between ball angle and goal target vector
@@ -292,10 +292,10 @@ OutputData BetterDefend::update(BotData &self_data, BotData &other_data, float l
         while (angle_diff < -PI) angle_diff += 2*PI;
 
         // if ball close and ball in the way off goal
-        // if (self_data.ball_strength >= 30 && angle_diff <= PI/2) {
-        //     if (angle_diff != 0) this->angle += (abs(angle_diff)/angle_diff)*-PI/18*6;
-        //     else this->angle += PI/18*6;
-        // }
+        if (self_data.ball_strength >= BALL_STRENGTH_LIMIT && angle_diff <= PI/2) {
+            if (angle_diff != 0) this->angle += (abs(angle_diff)/angle_diff)*-PI/18*7;
+            else this->angle += PI/18*7;
+        }
         // if angle diff positive then ball is on the right therefore -60 degrees
         // if angle diff negative then ball is on the left therefore +60 degrees
     }

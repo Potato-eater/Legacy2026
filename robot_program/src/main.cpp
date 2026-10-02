@@ -49,6 +49,7 @@ DribblerMotor dribbler(DR_DIR, DR_PWM);
 MotorController motor_ctrl;
 
 bool robot_start = false; // thie variable defines if the robot should move.
+bool is_attack = false;
 
 bool button_pressed = false; 
 bool prev_robot_state = false;
@@ -75,6 +76,7 @@ float time_start = millis();
 float time_end = millis();
 
 int num_greater_than_other = 0;
+int num_less_than_other = 0;
 
 void setup() {
   // put your setup code here, to run once:
@@ -185,8 +187,6 @@ void loop() {
   line_sensor.send_bot_data(self_data); // send data to the other robot via the line sensor.
   BotData other_data = line_sensor.other_data;
 
-  
-  bool is_attack = false;
   //OutputData output = independent_attack .update(self_data, other_data, 0.0);
 
   OutputData output = better_defend.update(self_data, other_data, 0.0);
@@ -196,24 +196,15 @@ void loop() {
   else {
     num_greater_than_other = 0;
   }
-  if (num_greater_than_other >= 2) {
+  if (num_greater_than_other >= 10) {
     output = independent_attack.update(self_data, other_data, 0.0);
     is_attack = true;
   }
-
-
-  if (self_data.ball_strength == 0 && other_data.ball_strength == 0) {
-    float own_dist_to_goal = self_data.pos_vector.relative_to(own_goal_pos_vector).magnitude();
-    float other_dist_to_goal = other_data.pos_vector.relative_to(own_goal_pos_vector).magnitude();
-    Serial.printf("own dist: %.2f other dist: %.2f \n", own_dist_to_goal, other_dist_to_goal);
-    if (own_dist_to_goal > other_dist_to_goal) {
-      output = independent_attack.update(self_data, other_data, 0.0);
-      Serial.printf("no ball. neutral pos\n");
-    }
-    else {
-      output = better_defend.update(self_data, other_data, 0.0);
-      Serial.printf("no ball. defend pos\n");
-    }
+  else {
+    is_attack = false;
+  }
+  if (self_data.ball_strength == 0 && is_attack) {
+    output = independent_attack.update(self_data, other_data, 0.0);
   }
   
   check_line(self_data.heading, self_data.line_vector, &pos_sys, &output.angle); // stops the robot from getting out of the line.
@@ -224,7 +215,7 @@ void loop() {
     motor_ctrl.stop_motors();
   }
   else {
-    motor_ctrl.run_motors(output.speed, output.angle, output.rotation); 
+    motor_ctrl.run_motors(100.0, output.angle, output.rotation); 
   }
 
   
@@ -246,7 +237,7 @@ void loop() {
 
   digitalWrite(DEBUG_LED, HIGH);
   digitalWrite(TEENSY_LED, camera.facing_yellow);
-  Serial.println(self_data.ball_strength);
+  Serial.printf("%.2f, %.2f\n", self_data.pos_vector.i, self_data.pos_vector.j);
 }
 
 void set_goal_colour(bool *is_yellow) {
