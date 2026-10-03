@@ -21,7 +21,7 @@ const int ULTRASONIC_TOLERANCE = 20;
 const float ULTRASONIC_TO_ROBOT = 9.5;
 
 
-const float FORWARD_TOLERANCE = M_PI/13;
+const float FORWARD_TOLERANCE = M_PI/14;
 const float DEFEND_DIST = 30; // not used by better defend
 const int SLOW_DOWN_DIST = 40; // where the robot should release the ball
 

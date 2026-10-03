@@ -187,25 +187,27 @@ void loop() {
   line_sensor.send_bot_data(self_data); // send data to the other robot via the line sensor.
   BotData other_data = line_sensor.other_data;
 
-  //OutputData output = independent_attack .update(self_data, other_data, 0.0);
-
-  OutputData output = better_defend.update(self_data, other_data, 0.0);
-  if (self_data.ball_strength > other_data.ball_strength) {
-    num_greater_than_other++;
-  }
-  else {
-    num_greater_than_other = 0;
-  }
-  if (num_greater_than_other >= 10) {
-    output = independent_attack.update(self_data, other_data, 0.0);
-    is_attack = true;
-  }
-  else {
-    is_attack = false;
-  }
-  if (self_data.ball_strength == 0 && is_attack) {
-    output = independent_attack.update(self_data, other_data, 0.0);
-  }
+  OutputData output = independent_attack .update(self_data, other_data, 0.0);
+  // String current_mode = "defend";
+  // OutputData output = better_defend.update(self_data, other_data, 0.0);
+  // if (self_data.ball_strength > other_data.ball_strength) {
+  //   num_greater_than_other++;
+  // }
+  // else {
+  //   num_greater_than_other = 0;
+  // }
+  // if (num_greater_than_other >= 300) {
+  //   output = independent_attack.update(self_data, other_data, 0.0);
+  //   current_mode = "attack";
+  //   is_attack = true;
+  // }
+  // else {
+  //   is_attack = false;
+  // }
+  // if (self_data.ball_strength == 0 && is_attack) {
+  //   output = independent_attack.update(self_data, other_data, 0.0);
+  //   current_mode = "attack";
+  // }
   
   check_line(self_data.heading, self_data.line_vector, &pos_sys, &output.angle); // stops the robot from getting out of the line.
   
@@ -237,7 +239,8 @@ void loop() {
 
   digitalWrite(DEBUG_LED, HIGH);
   digitalWrite(TEENSY_LED, camera.facing_yellow);
-  Serial.printf("%.2f, %.2f\n", self_data.pos_vector.i, self_data.pos_vector.j);
+  // Serial.printf("%d\n", num_greater_than_other);
+  // Serial.println(current_mode);
 }
 
 void set_goal_colour(bool *is_yellow) {
